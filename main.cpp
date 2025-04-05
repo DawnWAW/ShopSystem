@@ -1,25 +1,41 @@
 #include <iostream>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the
-    // <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+#include "include/Database.h"
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code.
-        // We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/>
-        // breakpoint for you, but you can always add more by pressing
-        // <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+int main() {
+    // Database test
+    try {
+        Database database("shop.db");
+
+        int64_t id = database.insertAccount(Account("ABD","ABD"));
+        std::cout << "插入记录:" << id << std::endl;
+
+        if (database.userExists("root")) {
+            std::cout<< "user [root] exists" << std::endl;
+        }
+        else {
+            std::cout << "user [root] does not exist" << std::endl;
+        }
+
+        if (database.userExists("ABD")) {
+            std::cout<< "user [root] exists" << std::endl;
+            Account account = database.getAccount("ABD");
+            std::cout<< "userid   [" << account.getId() << "]" << std::endl
+                     << "username [" << account.getUsername() << "]" << std::endl
+                     << "userpswd [" << account.getPassword() << "]" << std::endl;
+        }
+        else {
+            std::cout << "user [ABD] does not exist" << std::endl;
+        }
+
+        auto result = database.query("select * from account");
+        for (const auto& row : result) {
+            std::cout <<  "ID: "<< row[0] << " Username: " << row[1] << " Password: " << row[2] << std::endl;
+        }
+    }catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
+        return 1;
     }
 
     return 0;
 }
-
-// TIP See CLion help at <a
-// href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>.
-//  Also, you can try interactive lessons for CLion by selecting
-//  'Help | Learn IDE Features' from the main menu.
