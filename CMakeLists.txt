@@ -14,8 +14,9 @@ add_executable(ShopSystem main.cpp
         ${MODULE}/Shop/Item.cpp
         ${MODULE}/Shop/Cart.cpp
         ${MODULE}/Menu/Menu.cpp
+        ${MODULE}/Menu/MainMenu.cpp
         ${MODULE}/Data/Database.cpp
-        )
+)
 target_include_directories(ShopSystem PUBLIC ${INCLUDE})
 
 
