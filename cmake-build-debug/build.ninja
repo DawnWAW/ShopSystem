@@ -52,36 +52,42 @@ build cmake_object_order_depends_target_ShopSystem: phony || .
 build CMakeFiles/ShopSystem.dir/main.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/main.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir
 
 build CMakeFiles/ShopSystem.dir/src/module/Account/Account.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Account/Account.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Account/Account.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Account
 
 build CMakeFiles/ShopSystem.dir/src/module/Shop/Item.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Shop/Item.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Shop/Item.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Shop
 
 build CMakeFiles/ShopSystem.dir/src/module/Shop/Cart.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Shop/Cart.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Shop/Cart.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Shop
 
 build CMakeFiles/ShopSystem.dir/src/module/Menu/Menu.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Menu/Menu.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Menu/Menu.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Menu
 
 build CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Data/Database.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Data
 

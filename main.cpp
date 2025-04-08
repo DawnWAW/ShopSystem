@@ -18,11 +18,17 @@ int main() {
         }
 
         if (database.userExists("ABD")) {
-            std::cout<< "user [root] exists" << std::endl;
+            std::cout<< "user [ABD] exists" << std::endl;
             Account account = database.getAccount("ABD");
             std::cout<< "userid   [" << account.getId() << "]" << std::endl
                      << "username [" << account.getUsername() << "]" << std::endl
                      << "userpswd [" << account.getPassword() << "]" << std::endl;
+            database.changePassword("ABD", "ABC");
+            account = database.getAccount("ABD");
+            std::cout<< "userid   [" << account.getId() << "]" << std::endl
+                     << "username [" << account.getUsername() << "]" << std::endl
+                     << "userpswd [" << account.getPassword() << "]" << std::endl;
+
         }
         else {
             std::cout << "user [ABD] does not exist" << std::endl;

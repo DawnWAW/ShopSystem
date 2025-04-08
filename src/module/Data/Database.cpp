@@ -132,6 +132,23 @@ int64_t Database::insertAccount(const Account &account) const {
     return id;
 }
 
+bool Database::changePassword(const std::string& username, const std::string& newPassword) {
+    const char* sql = "UPDATE account SET password = ? WHERE username = ?;";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    sqlite3_bind_text(stmt, 1, newPassword.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_TRANSIENT);
+
+    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+
+    sqlite3_finalize(stmt);
+    return success;
+}
+
 sqlite3 * Database::getDB() const {
     return this->db;
 }

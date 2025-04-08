@@ -34,6 +34,8 @@ public:
 
     int64_t insertAccount(const Account &account) const;
 
+    bool changePassword(const std::string &username, const std::string &newPassword);
+
     [[nodiscard]] sqlite3 *getDB() const;
 
 };
