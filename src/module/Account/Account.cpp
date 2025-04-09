@@ -2,7 +2,7 @@
 // Created by dawn on 2025/4/2.
 //
 
-#include "../../../include/Account.h"
+#include "Account.h"
 
 Account::Account(){
     this->id = -1;

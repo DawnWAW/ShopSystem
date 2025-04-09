@@ -4,12 +4,12 @@
 
 #include <utility>
 
-#include "../../../include/Menu.h"
+#include "Menu.h"
 
 #include <iostream>
 #include <limits>
 #include <cstdlib>
-Menu::Menu(std::string title) :title(std::move(title)){}
+Menu::Menu(const std::string &title) :title(title){}
 
 void Menu::addItem(const std::string &description, std::function<void()> action) {
     this->items.push_back({description, std::move(action)});
@@ -33,15 +33,15 @@ void Menu::display() const {
     for (size_t i = 0; i < items.size(); ++i) {
         std::cout << "[" << i + 1 << "] " << items[i].description << std::endl;
     }
-    std::cout << "[0] Back" << std::endl;
+    std::cout << "[0] Exit" << std::endl;
     std::cout << "OPTION: ";
 }
 
 void Menu::run() const {
+    int choice;
     while (true) {
         display();
 
-        int choice;
         std::cin >> choice;
 
         // clear buffer
@@ -56,11 +56,12 @@ void Menu::run() const {
             items[choice-1].action();
 
             // wait users to react
-            std::cout << std::endl << "Enter to continue...";
+            std::cout << "Enter to continue...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
-            std::cout << "Invalid choice, try again" <<std::endl;
+            std::cout << "Invalid choice, try again" ;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
 }

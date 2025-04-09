@@ -2,8 +2,12 @@
 // Created by dawn on 2025/4/8.
 //
 
-#include "../../../include/MainMenu.h"
-MainMenu::MainMenu(Database &database) :database(database){}
+#include "MainMenu.h"
+
+
+MainMenu::MainMenu(Database &database) : Menu("MainMenu"), database(database) {
+    this->updateMainMenu();
+}
 
 // void MainMenu::showAppState() const {
 //     (this->appState.isLoggedIn ?
@@ -11,36 +15,33 @@ MainMenu::MainMenu(Database &database) :database(database){}
 //         : std::cout << "[Guest](Not LoggedIn)") << std::endl;
 // }
 
-void MainMenu::showMainMenu(){
-    Menu mainMenu("Main Menu");
-    updateMainMenu(mainMenu);
-    mainMenu.run();
-}
 
-void MainMenu::updateMainMenu(Menu &menu) {
-    menu.clearItem();
+void MainMenu::updateMainMenu() {
+    this->clearItem();
     if(this->appState.isLoggedIn) {
-        menu.addItem("Shopping",
+        this->addItem("Shopping",
             [this](){ std::cout<<"Under developing"<<std::endl; });
-        menu.addItem("Accout Managerment",
+        this->addItem("Accout Managerment",
             [this](){std::cout<<"Under developing"<<std::endl;});
-        menu.addItem("Logout",
+        this->addItem("Logout",
             [this]() {
+                // TODO:logout interface and set appstate
                 this->appState.isLoggedIn=false;
                 this->appState.isAdmin=false;
                 this->appState.account=nullptr;
+                updateMainMenu();
             });
     }
     else {
-        menu.addItem("Browsing",
+        this->addItem("Browsing",
             [this](){std::cout<<"Under developing"<<std::endl;});
-        menu.addItem("Login",
+        this->addItem("Login",
             [this]() {
                 // TODO:login interface and set appstate
                 this->appState.isLoggedIn=true;
+                updateMainMenu();
             });
     }
-    menu.addItem("Quit",[](){ exit(0); });
 }
 
 

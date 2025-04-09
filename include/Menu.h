@@ -16,20 +16,20 @@ public:
         std::function<void()> action;
     };
 
-    explicit Menu(std::string title);
+    explicit Menu(const std::string& title);
+
+    virtual ~Menu() = default;
 
     void addItem(const std::string &description, std::function<void()> action);
     void clearItem();
     void display() const;
     void run() const;
-    void setTitle(const std::string &title);
-
-private:
-    std::string title;
-    std::vector<MenuItem> items;
+    // void setTitle(const std::string &title);
     static void clearScreen() ;
 
-
+protected:
+    std::string title;
+    std::vector<MenuItem> items;
 };
 
 

@@ -8,9 +8,10 @@
 #include "Database.h"
 #include "Account.h"
 #include <iostream>
+#include <limits>
 
 
-class MainMenu {
+class MainMenu final : public Menu {
 public:
   struct AppState{
     bool isLoggedIn = false;
@@ -18,9 +19,8 @@ public:
     Account* account = nullptr;
   };
   explicit MainMenu(Database &database);
-  void showMainMenu();
 
-  void updateMainMenu(Menu &menu);
+  void updateMainMenu();
 
   void showAppState() const;
 private:
