@@ -5,15 +5,25 @@
 #include "MainMenu.h"
 
 
-MainMenu::MainMenu(Database &database) : Menu("MainMenu"), database(database) {
+MainMenu::MainMenu(Database &database,Logio &logio) : Menu("MainMenu"), database(database), logio(logio) {
     this->updateMainMenu();
 }
 
-// void MainMenu::showAppState() const {
-//     (this->appState.isLoggedIn ?
-//         std::cout <<"["<<this->appState.account->getUsername()<<"](LoggedIn)"
-//         : std::cout << "[Guest](Not LoggedIn)") << std::endl;
-// }
+void MainMenu::showAppState() const {
+    if (this->appState.isAdmin) {
+        std::cout <<"[Admin]";
+    }
+    else {
+        std::cout <<"["<<this->appState.account.getUsername()<<"]";
+    }
+    if (this->appState.isLoggedIn) {
+        std::cout <<"(LoggedIn)";
+    }
+    else {
+        std::cout <<"(Not LoggedIn)";
+    }
+    std::cout << std::endl;
+}
 
 
 void MainMenu::updateMainMenu() {
@@ -21,15 +31,16 @@ void MainMenu::updateMainMenu() {
     if(this->appState.isLoggedIn) {
         this->addItem("Shopping",
             [this](){ std::cout<<"Under developing"<<std::endl; });
-        this->addItem("Accout Managerment",
+        this->addItem("Account Management",
             [this](){std::cout<<"Under developing"<<std::endl;});
         this->addItem("Logout",
             [this]() {
-                // TODO:logout interface and set appstate
+                logio.logout();
+                this->appState.account = logio.current_account();
                 this->appState.isLoggedIn=false;
                 this->appState.isAdmin=false;
-                this->appState.account=nullptr;
-                updateMainMenu();
+                this->updateMainMenu();
+                this->showAppState();
             });
     }
     else {
@@ -37,9 +48,15 @@ void MainMenu::updateMainMenu() {
             [this](){std::cout<<"Under developing"<<std::endl;});
         this->addItem("Login",
             [this]() {
-                // TODO:login interface and set appstate
-                this->appState.isLoggedIn=true;
-                updateMainMenu();
+                if (logio.login()) {
+                    this->appState.isLoggedIn=true;
+                    this->appState.account = logio.current_account();
+                    if (logio.current_account().getUsername() == "root") {
+                        this->appState.isAdmin=true;
+                    }
+                    this->updateMainMenu();
+                    this->showAppState();
+                }
             });
     }
 }

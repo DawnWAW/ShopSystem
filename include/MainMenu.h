@@ -9,6 +9,7 @@
 #include "Account.h"
 #include <iostream>
 #include <limits>
+#include <Logio.h>
 
 
 class MainMenu final : public Menu {
@@ -16,15 +17,16 @@ public:
   struct AppState{
     bool isLoggedIn = false;
     bool isAdmin = false;
-    Account* account = nullptr;
+    Account account;
   };
-  explicit MainMenu(Database &database);
+  MainMenu(Database &database, Logio &logio);
 
   void updateMainMenu();
 
   void showAppState() const;
 private:
     Database& database;
+    Logio& logio;
     AppState appState;
 };
 

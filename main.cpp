@@ -1,11 +1,13 @@
 #include <iostream>
+#include <Logio.h>
 #include <MainMenu.h>
 
 int main() {
     // Database test
     try {
         Database database("shop.db");
-        MainMenu mainMenu(database);
+        Logio logio(database);
+        MainMenu mainMenu(database,logio);
         mainMenu.run();
 
     }catch (std::exception &e) {

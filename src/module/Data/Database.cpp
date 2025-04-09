@@ -29,6 +29,7 @@ Database& Database::openDB(const std::string &dbname) {
 }
 
 Database& Database::init_table() {
+    // tb_account
     this->execute("create table if not exists account("
                 "id integer primary key autoincrement,"
                 "username varchar(20) unique not null,"
@@ -96,7 +97,7 @@ Account Database::getAccount(const std::string &username) const {
 
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, nullptr);
 
-    Account account{};
+    Account account;
     if (sqlite3_step(stmt) == SQLITE_ROW) {
         account = Account(
             sqlite3_column_int(stmt, 0),
@@ -132,7 +133,7 @@ int64_t Database::insertAccount(const Account &account) const {
     return id;
 }
 
-bool Database::changePassword(const std::string& username, const std::string& newPassword) {
+bool Database::changePassword(const std::string& username, const std::string& newPassword) const {
     const char* sql = "UPDATE account SET password = ? WHERE username = ?;";
     sqlite3_stmt* stmt;
 

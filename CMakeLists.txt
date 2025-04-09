@@ -11,6 +11,7 @@ set(MODULE src/module)
 
 add_executable(ShopSystem main.cpp
         ${MODULE}/Account/Account.cpp
+        ${MODULE}/Account/Logio.cpp
         ${MODULE}/Shop/Item.cpp
         ${MODULE}/Shop/Cart.cpp
         ${MODULE}/Menu/Menu.cpp
