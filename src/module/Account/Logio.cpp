@@ -79,6 +79,17 @@ void Logio::logout() {
 }
 
 void Logio::changePassword() const {
+    std::string newPassword;
+    std::cout << "Enter new password: ";
+    std::getline(std::cin, newPassword);
+
+    if(database.changePassword(this->currentAccount.getUsername(),newPassword)) {
+        std::cout << "Password changed succeeded"<<std::endl
+        << "Your new password: "<<newPassword<<std::endl;
+    }
+    else {
+        std::cout << "Password changed failed"<<std::endl;
+    }
 }
 
 [[nodiscard]] Account Logio::current_account() const {

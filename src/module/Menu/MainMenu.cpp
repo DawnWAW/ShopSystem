@@ -31,8 +31,8 @@ void MainMenu::updateMainMenu() {
     if(this->appState.isLoggedIn) {
         this->addItem("Shopping",
             [this](){ std::cout<<"Under developing"<<std::endl; });
-        this->addItem("Account Management",
-            [this](){std::cout<<"Under developing"<<std::endl;});
+        this->addItem("Change Password",
+            [this](){ logio.changePassword(); });
         this->addItem("Logout",
             [this]() {
                 logio.logout();
