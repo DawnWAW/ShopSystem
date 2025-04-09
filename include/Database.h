@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "Account.h"
+#include "Item.h"
 
 
 class Database {
@@ -26,6 +27,7 @@ public:
 
     Database& execute(const std::string &sql);
 
+    // database for account
     [[nodiscard]] std::vector<std::vector<std::string>> query(const std::string& sql) const;
 
     [[nodiscard]] bool userExists(const std::string &username) const;
@@ -35,6 +37,24 @@ public:
     int64_t insertAccount(const Account &account) const;
 
     bool changePassword(const std::string &username, const std::string &newPassword) const;
+
+    // database for item
+    bool addItem(const Item& item);
+
+    Item getItemById(int id);
+
+    // user search for item
+    std::vector<Item> getItemByName(const std::string &name);
+
+    std::vector<Item> getItemByCategory(const Item::Category &category);
+
+    std::vector<Item> getItemByPrice(const double &price, const double &around = 10.0);
+
+    bool updateItem(int id, Item &newItem);
+
+    bool deleteItem(int id);
+
+    std::vector<Item> query_all_items() const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 
