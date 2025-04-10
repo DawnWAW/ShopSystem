@@ -7,46 +7,41 @@ ItemService::ItemService(Database &database) : database(database) {}
 
 void ItemService::addItem() const {
     std::cout << "Adding item: " << std::endl;
-    std::string itemName;
-    std::string description;
-    double price;
-    int stock;
-    int choice;
+    // 1. item name
+    std::string itemName = FormMenu::getStrInput("Enter item name: ");
 
-    std::cout << "Enter item name: ";
-    std::getline(std::cin, itemName);
-
+    // 2. item category
+    Item::Category category;
+    FormMenu category_menu("Choose item category: ");
     for (size_t i = 0; i < 5; i++) {
-        std::cout << "["<< i+1 <<"]" << Item::category_to_string(static_cast<Item::Category>(i)) << std::endl;
+        category_menu.addItem(Item::category_to_string(static_cast<Item::Category>(i)),
+            [&category, i]() {
+                category = static_cast<Item::Category>(i);
+            });
     }
-    std::cout << "Choose item category: ";
-    std::cin >> choice;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (choice <= 0 || choice > 5) { choice = 5; }
-    auto itemCategory = static_cast<Item::Category>(choice - 1);
+    category_menu.run();
 
-    std::cout << "Enter item description (can be null): ";
-    std::getline(std::cin, description);
+    // 3. description
+    std::string description = FormMenu::getStrInput("Enter item description (can be null): ");
 
-    std::cout << "Enter item price: ";
-    std::cin >> price;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // 4. price
+    double price = FormMenu::getDoubleInput("Enter item price: ");
 
-    std::cout << "Enter item stock: ";
-    std::cin >> stock;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    // 5. stock
+    int stock = FormMenu::getIntInput("Enter item stock: ");
 
-    std::cout << "[1] On sale\t";
-    std::cout << "[2] Off sale\n";
-    std::cout << "Enter item state: ";
-    std::cin >> choice;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    int state = choice == 1 ? 1 : 0;
+    // 6. sale state
+    int state;
+    FormMenu saleMenu("Choose item sale state: ");
+    saleMenu.addItem("On sale",
+        [&state](){ state = 1; });
+    saleMenu.addItem("Not on sale",
+        [&state](){ state = 0; });
 
-
+    // 7. show item info
     std::cout << "Item Info: " <<std::endl
     << "ItemName: " << itemName << std::endl
-    << "Category: " << Item::category_to_string(itemCategory) << std::endl
+    << "Category: " << Item::category_to_string(category) << std::endl
     << "Description: " << description << std::endl
     << "Price: " << price << std::endl
     << "Stock: " << stock << std::endl;
@@ -54,21 +49,22 @@ void ItemService::addItem() const {
     if (state) {
         std::cout << "On sale" << std::endl;
     }else {
-        std::cout << "NOt on sale" << std::endl;
+        std::cout << "Not on sale" << std::endl;
     }
-    std::cout <<"Are you sure to add this item?(y/n)";
-    std::string ack;
-    getline(std::cin, ack);
-    if (ack == "y" || ack == "Y") {
-        Item item(itemName,price,stock,state,itemCategory,description);
-        if(database.addItem(item)) {
-            std::cout << "Item adding succeeded" << std::endl;
-        }
-        else {
-            std::cout << "Item adding failed" << std::endl;
-        }
-    }
-    else {
-        std::cout << "Item adding canceled" << std::endl;
-    }
+
+    // 8. get ack
+    FormMenu ackMenu("Are you sure to add this item?");
+    ackMenu.addItem("Yes",
+        [this, &itemName, &category, &category_menu, &description, &price, &stock, &state]() {
+            Item item(itemName,price,stock,state,category,description);
+            if(database.addItem(item)) {
+                std::cout << "Item adding succeeded" << std::endl;
+            }
+            else {
+                std::cout << "Item adding failed" << std::endl;
+            }
+        });
+    ackMenu.addItem("No",
+        [](){std::cout << "Item adding canceled" << std::endl;});
+    ackMenu.run();
 }

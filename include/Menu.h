@@ -17,13 +17,10 @@ public:
     };
 
     explicit Menu(const std::string& title);
-
-    virtual ~Menu() = default;
-
     void addItem(const std::string &description, std::function<void()> action);
     void clearItem();
-    void display() const;
-    void run() const;
+    virtual void display() const;
+    virtual void run() const;
     // void setTitle(const std::string &title);
     static void clearScreen() ;
 

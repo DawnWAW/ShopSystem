@@ -8,25 +8,18 @@ Logio::Logio(Database &database):database(database) {
 }
 
 bool Logio::login() {
-    std::string username, password;
     Account account;
-
     std::cout << "=== User Login ===\n";
     // 1. get username
-    std::cout << "username: ";
-    std::getline(std::cin, username);
-    account.set_username(username);
+    account.set_username(FormMenu::getStrInput("username: "));
 
     // 2. check if user exists
-    if (database.userExists(username)) {
+    if (database.userExists(account.getUsername())) {
         // 2.1 user exists, go to log in
-        account = database.getAccount(username);
+        account = database.getAccount(account.getUsername());
         // get password
         for (int i = 2; i >= 0; i--) {
-            std::cout << "password: ";
-            std::getline(std::cin, password);
-
-            if (account.getPassword() != password) {
+            if (account.getPassword() != FormMenu::getStrInput("password: ")) {
                 // password wrong, input again
                 if (i) {
                     std::cout << "Wrong password!" << std::endl
@@ -46,30 +39,29 @@ bool Logio::login() {
     }
     // user doesn't exist, ask if user want to register
     else {
-        std::string ack;
-        std::cout << "User haven't register" << std::endl
-                << "Do you want to register User[" << username << "]? (y/n)" << std::endl;
-        std::getline(std::cin, ack);
-        if (ack == "Y" || ack == "y") {
-            // go to register
-            std::cout << "Set your password:";
-            std::getline(std::cin, password);
+        std::cout << "User haven't register" << std::endl;
+        FormMenu ackMenu("Do you want to register User [" + account.getUsername() + "]?");
+        ackMenu.addItem("Yes",
+            [this, &account]() {
+                // go to register
+                account.set_password(FormMenu::getStrInput("Set your password: "));
+                // add userdata to db
+                if (database.insertAccount(account)) {
+                    std::cout << "Registration successful!" << std::endl
+                    << account.toString() << std::endl
+                    << "You can now go to login" << std::endl;
+                }
+                else {
+                    std::cout << "Registration failed!" << std::endl;
+                }
+            });
+        ackMenu.addItem("No"
+            ,[]() {
+                std::cout << "Register cancelled"<<std::endl;
+            });
+        ackMenu.run();
 
-            account.set_password(password);
-            // add userdata to db
-            if (database.insertAccount(account)) {
-                std::cout << "Registration successful!" << std::endl
-                << account.toString() << std::endl
-                << "You can now go to login" << std::endl;
-            }
-            else {
-                std::cout << "Registration failed!" << std::endl;
-            }
-        }
-        else {
-            std::cout << "Register cancelled"<<std::endl;
-        }
-        // do not register, return
+        // do not register, return false
         return false;
     }
 }
@@ -79,9 +71,7 @@ void Logio::logout() {
 }
 
 void Logio::changePassword() const {
-    std::string newPassword;
-    std::cout << "Enter new password: ";
-    std::getline(std::cin, newPassword);
+    std::string newPassword = FormMenu::getStrInput("Change password");
 
     if(database.changePassword(this->currentAccount.getUsername(),newPassword)) {
         std::cout << "Password changed succeeded"<<std::endl

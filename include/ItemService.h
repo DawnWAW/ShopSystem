@@ -6,6 +6,7 @@
 #define ITEMSERVICE_H
 #include "Database.h"
 #include "Item.h"
+#include "FormMenu.h"
 #include <iostream>
 #include <limits>
 
@@ -14,7 +15,7 @@ class ItemService {
 private:
   Database &database;
 public:
-  ItemService(Database &database);
+  explicit ItemService(Database &database);
 
   void addItem() const;
 };
