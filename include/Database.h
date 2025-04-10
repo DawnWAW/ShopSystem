@@ -39,7 +39,7 @@ public:
     bool changePassword(const std::string &username, const std::string &newPassword) const;
 
     // database for item
-    bool addItem(const Item& item);
+    bool addItem(const Item& item) const;
 
     Item getItemById(int id);
 

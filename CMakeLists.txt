@@ -14,6 +14,7 @@ add_executable(ShopSystem main.cpp
         ${MODULE}/Account/Logio.cpp
         ${MODULE}/Shop/Item.cpp
         ${MODULE}/Shop/Cart.cpp
+        ${MODULE}/Shop/ItemService.cpp
         ${MODULE}/Menu/Menu.cpp
         ${MODULE}/Menu/MainMenu.cpp
         ${MODULE}/Data/Database.cpp

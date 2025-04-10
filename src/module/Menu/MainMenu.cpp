@@ -4,6 +4,8 @@
 
 #include "MainMenu.h"
 
+#include <ItemService.h>
+
 
 MainMenu::MainMenu(Database &database,Logio &logio) : Menu("MainMenu"), database(database), logio(logio) {
     this->updateMainMenu();
@@ -31,6 +33,13 @@ void MainMenu::updateMainMenu() {
     if(this->appState.isLoggedIn) {
         this->addItem("Shopping",
             [this](){ std::cout<<"Under developing"<<std::endl; });
+        if (this->appState.isAdmin) {
+            this->addItem("Items Management",
+                [this]() {
+                    ItemService item_service(database);
+                    item_service.addItem();
+                });
+        }
         this->addItem("Change Password",
             [this](){ logio.changePassword(); });
         this->addItem("Logout",

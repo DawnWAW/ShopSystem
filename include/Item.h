@@ -23,11 +23,11 @@ public:
 
 
     // read from database
-    Item::Item(int id, const std::string &name, const double price, const int stock,const Category category, const std::string &description, const time_t created_time, const time_t updated_time);
+    [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const Category category, const std::string &description, const std::string &created_time, const std::string &updated_time);
 
 
     // create by admin
-    Item::Item(const std::string &name, double price, int stock,Category category = Category::OTHER, const std::string &description = "");
+    Item(const std::string &name, double price, int stock, const int state, Category category = Category::OTHER, const std::string &description = "");
 
 private:
     int id;
@@ -42,9 +42,12 @@ private:
 
     int stock;
 
-    time_t created_time;
+    int state;
 
-    time_t updated_time;
+private:
+    std::string created_time;
+
+    std::string updated_time;
 
 public:
 
@@ -72,13 +75,17 @@ public:
 
     void set_stock(int stock);
 
-    [[nodiscard]] time_t get_created_time() const;
+    int get_state() const;
+
+    void set_state(int state);
+
+    [[nodiscard]] std::string get_created_time() const;
 
     bool increaseStock(int amount);
 
     bool decreaseStock(int amount);
 
-    [[nodiscard]] time_t get_updated_time() const;
+    [[nodiscard]] std::string get_updated_time() const;
 
     void display() const;
 

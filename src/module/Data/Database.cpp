@@ -29,12 +29,25 @@ Database& Database::openDB(const std::string &dbname) {
 }
 
 Database& Database::init_table() {
-    // tb_account
+    // create tb_account
     this->execute("create table if not exists account("
                 "id integer primary key autoincrement,"
                 "username varchar(20) unique not null,"
                 "password varchar(20) not null);"
-    );
+    )
+    // create tb_items
+    .execute("create table if not exists items("
+    "id  INTEGER primary key autoincrement,"
+    "name         TEXT    not null,"
+    "category     TEXT    not null,"
+    "description  TEXT,"
+    "price        REAL    not null,"
+    "stock        INTEGER not null,"
+    "state        INTEGER not null,"
+    "created_time INTEGER not null,"
+    "updated_time INTEGER not null,"
+    "check (price >= 0),"
+    "check (stock >= 0));");
     return *this;
 }
 
@@ -147,6 +160,31 @@ bool Database::changePassword(const std::string& username, const std::string& ne
     bool success = (sqlite3_step(stmt) == SQLITE_DONE);
 
     sqlite3_finalize(stmt);
+    return success;
+}
+
+bool Database::addItem(const Item &item) const {
+    const char* sql =
+        "INSERT INTO items (name, category, description, price, stock, state, created_time, updated_time) "
+        "VALUES (?, ?, ?, ?, ?, ?, strftime('%s', 'now'), strftime('%s', 'now'))";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    int paramIndex = 1;
+
+    sqlite3_bind_text(stmt, paramIndex++, item.get_name().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, paramIndex++, Item::category_to_string(item.get_category()).c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, paramIndex++, item.get_description().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, paramIndex++, item.get_price());
+    sqlite3_bind_int(stmt, paramIndex++, item.get_stock());
+    sqlite3_bind_int(stmt, paramIndex++, item.get_state());
+
+    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+
     return success;
 }
 

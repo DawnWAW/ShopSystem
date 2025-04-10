@@ -8,24 +8,27 @@
 
 
 // read from database
-[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock,const Category category, const std::string &description, const time_t created_time, const time_t updated_time)
+[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock, const int state ,const Category category, const std::string &description, const std::string &created_time, const std::string &updated_time)
     : id(id),
       name(name),
       category(category),
       description(description),
       price(price),
       stock(stock),
+      state(state),
       created_time(created_time),
       updated_time(updated_time) {
 }
 
 // create by admin
-Item::Item(const std::string &name, double price, int stock,Category category, const std::string &description = "")
+Item::Item(const std::string &name, double price, int stock, int state, Category category, const std::string &description)
     : name(name),
       category(category),
       description(description),
       price(price),
-      stock(stock) {
+      stock(stock),
+      state(state)
+    {
     id = 0;
 }
 
@@ -78,11 +81,19 @@ void Item::set_stock(const int stock) {
     this->stock = stock;
 }
 
-[[nodiscard]] time_t Item::get_created_time() const {
+[[nodiscard]] int Item::get_state() const {
+    return state;
+}
+
+void Item::set_state(const int state) {
+    this->state = state;
+}
+
+[[nodiscard]] std::string Item::get_created_time() const {
     return created_time;
 }
 
-[[nodiscard]] time_t Item::get_updated_time() const {
+[[nodiscard]] std::string Item::get_updated_time() const {
     return updated_time;
 }
 
@@ -96,7 +107,7 @@ std::string Item::to_string() const {
         << "<< " << std::fixed << std::setprecision(2) << price << "$ >>"
         << "{{ " << stock << " left }} " << std::endl
         << "Description: " << (description.empty()?"NULL":description) << std::endl
-        << "Update Time: " << std::ctime(&updated_time) << std::endl;
+        << "Update Time: " << updated_time << std::endl;
     return oss.str();
 }
 
