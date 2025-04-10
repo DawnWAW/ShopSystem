@@ -38,6 +38,7 @@ void MainMenu::updateMainMenu() {
                 [this]() {
                     ItemService item_service(database);
                     item_service.addItem();
+                    item_service.showAllItems();
                 });
         }
         this->addItem("Change Password",

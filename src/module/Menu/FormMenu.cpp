@@ -24,13 +24,11 @@ void FormMenu::run() const {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         if (choice > 0 && static_cast<size_t>(choice) <= items.size()) {
-            clearScreen();
             items[choice-1].action();
             return;
         }
         else {
-            std::cout << "Invalid, try again" ;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid, try again: " ;
         }
     }
 }

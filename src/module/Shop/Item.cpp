@@ -8,16 +8,24 @@
 
 
 // read from database
-[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock, const int state ,const Category category, const std::string &description, const std::string &created_time, const std::string &updated_time)
+[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock, const int state ,const Category category, const std::string &description, const int64_t &created_time, const int64_t &updated_time)
     : id(id),
       name(name),
       category(category),
       description(description),
       price(price),
       stock(stock),
-      state(state),
-      created_time(created_time),
-      updated_time(updated_time) {
+      state(state)
+    {
+    const time_t created_time_in_seconds = created_time;
+    const time_t updated_time_in_seconds = updated_time;
+    struct tm *local_created_time = localtime(&created_time_in_seconds);
+    struct tm *local_updated_time = localtime(&updated_time_in_seconds);
+    char buffer[80];
+    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_created_time);
+    this->created_time = buffer;
+    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_updated_time);
+    this->updated_time = buffer;
 }
 
 // create by admin
@@ -103,20 +111,29 @@ void Item::display() const {
 
 std::string Item::to_string() const {
     std::ostringstream oss;
-    oss << "["<< id << "]\t" << name << "(" << category_to_string(category) << ")" <<std::endl
-        << "<< " << std::fixed << std::setprecision(2) << price << "$ >>"
-        << "{{ " << stock << " left }} " << std::endl
-        << "Description: " << (description.empty()?"NULL":description) << std::endl
-        << "Update Time: " << updated_time << std::endl;
+    oss << name << std::endl
+        << "category: " << category_to_string(category) << std::endl
+        << "price: " << std::fixed << std::setprecision(2) << price << std::endl
+        << "stock: " << stock << std::endl
+        << "description: " << (description.empty()?"NULL":description) << std::endl
+        << "updated Time: " << updated_time << std::endl;
     return oss.str();
 }
 
 std::string Item::category_to_string(Category category) {
     switch(category) {
-        case Category::GAMES: return "GAME";
-        case Category::DAILY:    return "DAILY";
-        case Category::FOOD:        return "FOOD";
-        case Category::BOOKS:       return "BOOKS";
-        default:                    return "OTHER";
+        case Category::GAMES:   return "GAME";
+        case Category::DAILY:   return "DAILY";
+        case Category::FOOD:    return "FOOD";
+        case Category::BOOKS:   return "BOOKS";
+        default:                return "OTHER";
     }
+}
+
+Item::Category Item::string_to_category(const std::string &category) {
+    if (category == "GAMES")    return Category::GAMES;
+    if (category == "DAILY")    return Category::DAILY;
+    if (category == "FOOD")     return Category::FOOD;
+    if (category == "BOOKS")    return Category::BOOKS;
+    return Category::OTHER;
 }

@@ -71,7 +71,7 @@ void Logio::logout() {
 }
 
 void Logio::changePassword() const {
-    std::string newPassword = FormMenu::getStrInput("Change password");
+    std::string newPassword = FormMenu::getStrInput("Enter new password: ");
 
     if(database.changePassword(this->currentAccount.getUsername(),newPassword)) {
         std::cout << "Password changed succeeded"<<std::endl

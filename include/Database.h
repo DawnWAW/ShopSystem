@@ -10,6 +10,7 @@
 #include <vector>
 #include "Account.h"
 #include "Item.h"
+#include <memory>
 
 
 class Database {
@@ -27,8 +28,7 @@ public:
 
     Database& execute(const std::string &sql);
 
-    // database for account
-    [[nodiscard]] std::vector<std::vector<std::string>> query(const std::string& sql) const;
+    [[nodiscard]] std::vector<int> queryAllId(const std::string &table) const;
 
     [[nodiscard]] bool userExists(const std::string &username) const;
 
@@ -41,7 +41,7 @@ public:
     // database for item
     bool addItem(const Item& item) const;
 
-    Item getItemById(int id);
+    [[nodiscard]] std::unique_ptr<Item> getItemById(const int &id) const;
 
     // user search for item
     std::vector<Item> getItemByName(const std::string &name);

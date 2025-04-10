@@ -5,6 +5,7 @@
 #ifndef ITEM_H
 #define ITEM_H
 #include <string>
+#include <ctime>
 #include <sstream>
 #include <iostream>
 
@@ -23,7 +24,7 @@ public:
 
 
     // read from database
-    [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const Category category, const std::string &description, const std::string &created_time, const std::string &updated_time);
+    [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const Category category, const std::string &description, const int64_t &created_time, const int64_t &updated_time);
 
 
     // create by admin
@@ -92,6 +93,8 @@ public:
     [[nodiscard]] std::string to_string() const;
 
     static std::string category_to_string(Category category);
+
+    [[nodiscard]] static Category string_to_category(const std::string &category) ;
 };
 
 

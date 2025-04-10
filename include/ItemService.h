@@ -9,6 +9,7 @@
 #include "FormMenu.h"
 #include <iostream>
 #include <limits>
+#include <vector>
 
 
 class ItemService {
@@ -18,6 +19,10 @@ public:
   explicit ItemService(Database &database);
 
   void addItem() const;
+
+  [[nodiscard]] std::vector<Item> queryAllItems() const;
+
+  void showAllItems() const;
 };
 
 

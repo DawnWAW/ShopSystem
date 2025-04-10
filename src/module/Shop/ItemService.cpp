@@ -37,6 +37,7 @@ void ItemService::addItem() const {
         [&state](){ state = 1; });
     saleMenu.addItem("Not on sale",
         [&state](){ state = 0; });
+    saleMenu.run();
 
     // 7. show item info
     std::cout << "Item Info: " <<std::endl
@@ -68,3 +69,21 @@ void ItemService::addItem() const {
         [](){std::cout << "Item adding canceled" << std::endl;});
     ackMenu.run();
 }
+
+std::vector<Item> ItemService::queryAllItems() const {
+    std::vector<Item> items;
+    std::vector<int> ids = database.queryAllId("items");
+    for (auto id : ids) {
+        items.push_back(*database.getItemById(id));
+    }
+    return items;
+}
+
+void ItemService::showAllItems() const {
+    for (const auto& item : queryAllItems()) {
+        item.display();
+        std::cout << "=========================" << std::endl;
+    }
+}
+
+

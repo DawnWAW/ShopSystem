@@ -37,17 +37,18 @@ Database& Database::init_table() {
     )
     // create tb_items
     .execute("create table if not exists items("
-    "id  INTEGER primary key autoincrement,"
-    "name         TEXT    not null,"
-    "category     TEXT    not null,"
-    "description  TEXT,"
-    "price        REAL    not null,"
-    "stock        INTEGER not null,"
-    "state        INTEGER not null,"
-    "created_time INTEGER not null,"
-    "updated_time INTEGER not null,"
-    "check (price >= 0),"
-    "check (stock >= 0));");
+            "id  INTEGER primary key autoincrement,"
+            "name         TEXT    not null,"
+            "category     TEXT    not null,"
+            "description  TEXT,"
+            "price        REAL    not null,"
+            "stock        INTEGER not null,"
+            "state        INTEGER not null,"
+            "created_time INTEGER not null,"
+            "updated_time INTEGER not null,"
+            "check (price >= 0),"
+            "check (stock >= 0));"
+    );
     return *this;
 }
 
@@ -62,22 +63,18 @@ Database& Database::execute(const std::string &sql){
     return *this;
 }
 
-std::vector<std::vector<std::string>> Database::query(const std::string &sql) const {
-    sqlite3_stmt *stmt = nullptr;
-    std::vector<std::vector<std::string>> results;
+std::vector<int> Database::queryAllId(const std::string &table) const {
+    const std::string sql = "SELECT id FROM "+table+" ORDER BY id;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<int> results;
 
     if (sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
     }
 
-    int cols = sqlite3_column_count(stmt);
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        std::vector<std::string> row;
-        for (int i = 0; i < cols; i++) {
-            const char* val = reinterpret_cast<const char*>(sqlite3_column_text(stmt, i));
-            row.emplace_back(val);
-        }
-        results.push_back(row);
+        int id = sqlite3_column_int(stmt, 0);
+        results.push_back(id);
     }
 
     sqlite3_finalize(stmt);
@@ -180,12 +177,44 @@ bool Database::addItem(const Item &item) const {
     sqlite3_bind_text(stmt, paramIndex++, item.get_description().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, paramIndex++, item.get_price());
     sqlite3_bind_int(stmt, paramIndex++, item.get_stock());
-    sqlite3_bind_int(stmt, paramIndex++, item.get_state());
+    sqlite3_bind_int(stmt, paramIndex, item.get_state());
 
-    bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
     sqlite3_finalize(stmt);
 
     return success;
+}
+
+std::unique_ptr<Item> Database::getItemById(const int &id) const {
+    const char* sql = "SELECT * FROM items WHERE id = ?";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return nullptr;
+    }
+
+    sqlite3_bind_int(stmt, 1, id);
+
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+        sqlite3_finalize(stmt);
+        return nullptr;
+    }
+
+    // 从数据库行创建 Item 对象
+    auto item = std::make_unique<Item>(
+        sqlite3_column_int(stmt, 0),      // id
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)), // name
+        sqlite3_column_double(stmt, 4),   // price
+        sqlite3_column_int(stmt, 5),      // stock
+        sqlite3_column_int(stmt, 6),
+        Item::string_to_category(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))), // category
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)), // description
+        sqlite3_column_int64(stmt, 6),    // created_time
+        sqlite3_column_int64(stmt, 7)     // updated_time
+    );
+
+    sqlite3_finalize(stmt);
+    return item;
 }
 
 sqlite3 * Database::getDB() const {
