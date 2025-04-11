@@ -44,7 +44,7 @@ void Menu::run() const {
 
         std::getline(std::cin, input);
         if (input.length() > 1 || input.empty()) {
-            std::cout << "Invalid choice, try again: " ;
+            std::cout << "Invalid choice, enter to try again" ;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
@@ -64,7 +64,7 @@ void Menu::run() const {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
-            std::cout << "Invalid choice, try again" ;
+            std::cout << "Invalid choice, enter to try again: " ;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }

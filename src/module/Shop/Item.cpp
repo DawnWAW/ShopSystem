@@ -155,8 +155,7 @@ std::string Item::input_name(const std::string &prompt) {
     do {
         itemname = FormMenu::getStrInput(prompt);
         if (itemname.empty()) {
-            std::cout << "Item name can not be empty";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Item name can not be empty" << std::endl;
         }
     }while (itemname.empty());
     return itemname;
@@ -179,7 +178,7 @@ double Item::input_price(const std::string &prompt) {
     double price = 0.0;
     do {
         if (price < 0) {
-            std::cout << "Price cannot be negative." << std::endl;
+            std::cout << "Price cannot be negative"<< std::endl;
         }
         price = FormMenu::getDoubleInput(prompt);
     }while (price < 0);
@@ -191,7 +190,7 @@ int Item::input_stock(const std::string &prompt) {
     int stock = 0;
     do {
         if (stock < 0) {
-            std::cout << "Stock cannot be negative." << std::endl;
+            std::cout << "Stock cannot be negative" << std::endl;
         }
         stock = FormMenu::getIntInput(prompt);
     }while (stock < 0);

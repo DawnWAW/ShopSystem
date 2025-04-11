@@ -22,8 +22,7 @@ void FormMenu::run() const {
     while (true) {
         std::getline(std::cin, input);
         if (input.length() > 1 || input.empty()) {
-            std::cout << "Invalid choice, try again: " ;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid, try again: " ;
             continue;
         }
 
@@ -34,7 +33,7 @@ void FormMenu::run() const {
             return;
         }
         else {
-            std::cout << "Invalid, try again: " ;
+            std::cout << "Invalid choice, try again: " ;
         }
     }
 }
