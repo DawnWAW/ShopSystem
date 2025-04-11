@@ -15,16 +15,19 @@
 
 class MainMenu final : public Menu {
 public:
-  struct AppState{
+    struct AppState{
     bool isLoggedIn = false;
     bool isAdmin = false;
     Account account;
-  };
-  MainMenu(Database &database, Logio &logio, ItemService &item_service);
+    };
+    MainMenu(Database &database, Logio &logio, ItemService &item_service);
 
-  void updateMainMenu();
+    void updateMainMenu();
+    void showAppState() const;
+    void showItemService(bool isLoggedIn) const;
+    void showItemManagement() const;
+    void setAppState(bool isLoggedIn, const Account &account);
 
-  void showAppState() const;
 private:
     Database& database;
     Logio& logio;

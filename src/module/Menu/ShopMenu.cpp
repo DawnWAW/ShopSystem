@@ -60,6 +60,10 @@ void ShopMenu::run() const {
 }
 
 void ShopMenu::showPage() const {
+    if (shop_items.empty()) {
+        std::cout << "No item" << std::endl;
+        return;
+    }
     const int from = page_view.current_page_number * page_view.number_per_page;
     const int to = (from + page_view.number_per_page > page_view.item_number) ? page_view.item_number : from + page_view.number_per_page;
     for (int i = from; i < to; ++i) {
