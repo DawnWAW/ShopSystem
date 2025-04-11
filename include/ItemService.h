@@ -20,6 +20,8 @@ public:
 
   void addItem() const;
 
+  void updateItem() const;
+
   [[nodiscard]] std::vector<Item> queryAllItems() const;
 
   void showAllItems() const;

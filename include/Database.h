@@ -39,22 +39,20 @@ public:
     bool changePassword(const std::string &username, const std::string &newPassword) const;
 
     // database for item
-    bool addItem(const Item& item) const;
+    [[nodiscard]] bool addItem(const Item& item) const;
+
+    bool updateItem(const Item &newItem) const;
+
+    [[nodiscard]] bool deleteItem(int id) const;
 
     [[nodiscard]] std::unique_ptr<Item> getItemById(const int &id) const;
 
-    // user search for item
-    std::vector<Item> getItemByName(const std::string &name);
+    std::vector<std::unique_ptr<Item>> getItemByName(const std::string &name);
 
-    std::vector<Item> getItemByCategory(const Item::Category &category);
+    std::vector<std::unique_ptr<Item>> getItemByCategory(const Item::Category &category);
 
-    std::vector<Item> getItemByPrice(const double &price, const double &around = 10.0);
+    std::vector<std::unique_ptr<Item>> getItemByPrice(const double &price, const double &around = 10.0);
 
-    bool updateItem(int id, Item &newItem);
-
-    bool deleteItem(int id);
-
-    std::vector<Item> query_all_items() const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 

@@ -8,6 +8,7 @@
 #include <ctime>
 #include <sstream>
 #include <iostream>
+#include "FormMenu.h"
 
 
 
@@ -95,6 +96,14 @@ public:
     static std::string category_to_string(Category category);
 
     [[nodiscard]] static Category string_to_category(const std::string &category) ;
+
+    [[nodiscard]] static Category input_category(const std::string &prompt);
+
+    [[nodiscard]] static double input_price(const std::string &prompt);
+
+    [[nodiscard]] static int input_stock(const std::string &prompt);
+
+    [[nodiscard]] static int input_state(const std::string &prompt);
 };
 
 

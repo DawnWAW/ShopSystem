@@ -37,8 +37,21 @@ void MainMenu::updateMainMenu() {
             this->addItem("Items Management",
                 [this]() {
                     ItemService item_service(database);
-                    item_service.addItem();
-                    item_service.showAllItems();
+
+                    Menu item_management_menu("Items Management");
+                    item_management_menu.addItem("Add item",
+                        [&item_service]() {
+                            item_service.addItem();
+                        });
+                    item_management_menu.addItem("Update item",
+                        [&item_service]() {
+                            item_service.updateItem();
+                        });
+                    item_management_menu.addItem("Show all items",
+                        [&item_service]() {
+                            item_service.showAllItems();
+                        });
+                    item_management_menu.run();
                 });
         }
         this->addItem("Change Password",

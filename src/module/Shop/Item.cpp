@@ -137,3 +137,52 @@ Item::Category Item::string_to_category(const std::string &category) {
     if (category == "BOOKS")    return Category::BOOKS;
     return Category::OTHER;
 }
+
+Item::Category Item::input_category(const std::string &prompt) {
+    Item::Category category;
+    FormMenu category_menu(prompt);
+    for (size_t i = 0; i < 5; i++) {
+        category_menu.addItem(Item::category_to_string(static_cast<Item::Category>(i)),
+            [&category, i]() {
+                category = static_cast<Item::Category>(i);
+            });
+    }
+    category_menu.run();
+    return category;
+}
+
+double Item::input_price(const std::string &prompt) {
+    double price = 0.0;
+    do {
+        if (price < 0) {
+            std::cout << "Price cannot be negative." << std::endl;
+        }
+        price = FormMenu::getDoubleInput(prompt);
+    }while (price < 0);
+    return price;
+
+}
+
+int Item::input_stock(const std::string &prompt) {
+    int stock = 0;
+    do {
+        if (stock < 0) {
+            std::cout << "Stock cannot be negative." << std::endl;
+        }
+        stock = FormMenu::getIntInput(prompt);
+    }while (stock < 0);
+    return stock;
+}
+
+int Item::input_state(const std::string &prompt) {
+    int state = 0;
+    FormMenu saleMenu(prompt);
+    saleMenu.addItem("On sale",
+        [&state](){ state = 1; });
+    saleMenu.addItem("Not on sale",
+        [&state](){ state = 0; });
+    saleMenu.run();
+    return state;
+}
+
+

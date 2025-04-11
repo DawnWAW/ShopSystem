@@ -185,6 +185,39 @@ bool Database::addItem(const Item &item) const {
     return success;
 }
 
+bool Database::updateItem(const Item &newItem) const {
+    const char* sql =
+    "UPDATE items SET "
+    "   updated_time = strftime('%s', 'now'), "
+    "   name = ? , "
+    "   price = ? , "
+    "   stock = ? ,"
+    "   state = ? ,"
+    "   category = ? ,"
+    "   description = ? "
+    "WHERE id = ? ; ";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    int paramIndex = 1;
+
+    sqlite3_bind_text(stmt, paramIndex++, newItem.get_name().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_double(stmt, paramIndex++, newItem.get_price());
+    sqlite3_bind_int(stmt, paramIndex++, newItem.get_stock());
+    sqlite3_bind_int(stmt, paramIndex++, newItem.get_state());
+    sqlite3_bind_text(stmt, paramIndex++, Item::category_to_string(newItem.get_category()).c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, paramIndex++, newItem.get_description().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, paramIndex, newItem.get_id());
+
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+
+    return success;
+}
+
 std::unique_ptr<Item> Database::getItemById(const int &id) const {
     const char* sql = "SELECT * FROM items WHERE id = ?";
     sqlite3_stmt* stmt;
@@ -209,8 +242,8 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
         sqlite3_column_int(stmt, 6),
         Item::string_to_category(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))), // category
         reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)), // description
-        sqlite3_column_int64(stmt, 6),    // created_time
-        sqlite3_column_int64(stmt, 7)     // updated_time
+        sqlite3_column_int64(stmt, 7),    // created_time
+        sqlite3_column_int64(stmt, 8)     // updated_time
     );
 
     sqlite3_finalize(stmt);
