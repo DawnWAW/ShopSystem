@@ -13,7 +13,6 @@ Database::Database(const std::string& dbname) {
 
 Database::~Database() {
     sqlite3_close(this->db);
-    std::cout << "Database closed" << std::endl;
 }
 
 Database& Database::openDB(const std::string &dbname) {
@@ -21,9 +20,6 @@ Database& Database::openDB(const std::string &dbname) {
     if (rc != SQLITE_OK) {
         std::cerr << "Can't open database"<< sqlite3_errmsg(this->db) << std::endl;
         sqlite3_close(db);
-    }
-    else {
-        std::cout << "Database opened" << std::endl;
     }
     return *this;
 }
@@ -245,17 +241,6 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
         sqlite3_finalize(stmt);
         return nullptr;
     }
-
-    // test
-    /*std::cout << sqlite3_column_int(stmt, 0) << std::endl       // id
-        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) << std::endl // name
-        << sqlite3_column_double(stmt, 4) << std::endl   // price
-        << sqlite3_column_int(stmt, 5)<< std::endl      // stock
-        << sqlite3_column_int(stmt, 6) << std::endl
-        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) << std::endl // category
-        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3))<< std::endl // description
-        << sqlite3_column_int64(stmt, 7) << std::endl    // created_time
-        << sqlite3_column_int64(stmt, 8)<< std::endl;*/
 
     auto item = std::make_unique<Item>(
         sqlite3_column_int(stmt, 0),      // id

@@ -8,7 +8,8 @@ int main() {
     try {
         Database database("shop.db");
         Logio logio(database);
-        MainMenu mainMenu(database,logio);
+        ItemService itemService(database);
+        MainMenu mainMenu(database,logio,itemService);
         mainMenu.run();
 
     }catch (std::exception &e) {

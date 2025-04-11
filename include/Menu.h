@@ -16,12 +16,12 @@ public:
         std::function<void()> action;
     };
 
-    explicit Menu(const std::string& title);
+    explicit Menu(const std::string& title = "");
     void addItem(const std::string &description, std::function<void()> action);
     void clearItem();
     virtual void display() const;
     virtual void run() const;
-    // void setTitle(const std::string &title);
+    void setTitle(const std::string &title);
     static void clearScreen() ;
 
 protected:

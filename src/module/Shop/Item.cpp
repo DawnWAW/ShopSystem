@@ -107,7 +107,7 @@ void Item::set_state(const int state) {
 
 void Item::display(const bool isDetailed) const {
     std::cout << to_string(isDetailed);
-    std::cout << "=========================" << std::endl;
+    std::cout << "========================" << std::endl;
 }
 
 std::string Item::to_string(const bool isDetailed) const {

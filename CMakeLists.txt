@@ -18,6 +18,7 @@ add_executable(ShopSystem main.cpp
         ${MODULE}/Menu/Menu.cpp
         ${MODULE}/Menu/MainMenu.cpp
         ${MODULE}/Menu/FormMenu.cpp
+        ${MODULE}/Menu/ShopMenu.cpp
         ${MODULE}/Data/Database.cpp
 )
 target_include_directories(ShopSystem PUBLIC ${INCLUDE})

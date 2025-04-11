@@ -27,6 +27,7 @@ void ItemService::addItem() const {
 
 
     // 7. show item info
+    std::cout << "========================" << std::endl;
     std::cout << "Item Info: " <<std::endl
     << "ItemName: " << itemName << std::endl
     << "Category: " << Item::category_to_string(category) << std::endl

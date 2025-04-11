@@ -29,7 +29,7 @@ void Menu::clearScreen() {
 
 void Menu::display() const {
     clearScreen();
-    std::cout << "=== " << title << " ===\n";
+    std::cout << "======= " << title << " =======\n";
     for (size_t i = 0; i < items.size(); ++i) {
         std::cout << "[" << i + 1 << "] " << items[i].description << std::endl;
     }
@@ -68,5 +68,9 @@ void Menu::run() const {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
+}
+
+void Menu::setTitle(const std::string &title) {
+    this->title = title;
 }
 

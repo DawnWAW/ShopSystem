@@ -5,9 +5,10 @@
 #include "MainMenu.h"
 
 #include <ItemService.h>
+#include <ShopMenu.h>
 
 
-MainMenu::MainMenu(Database &database,Logio &logio) : Menu("MainMenu"), database(database), logio(logio) {
+MainMenu::MainMenu(Database &database,Logio &logio, ItemService &item_service) : Menu("MainMenu"), database(database), logio(logio),item_service(item_service) {
     this->updateMainMenu();
 }
 
@@ -32,27 +33,38 @@ void MainMenu::updateMainMenu() {
     this->clearItem();
     if(this->appState.isLoggedIn) {
         this->addItem("Shopping",
-            [this](){ std::cout<<"Under developing"<<std::endl; });
+            [this](){
+                ShopMenu shop_menu(item_service,1);
+                shop_menu.addItem("Cart item",
+                    [](){ std::cout << "Under development" << std::endl; });
+                shop_menu.addItem("Next page",
+                    [&shop_menu]() {
+                        shop_menu.nextPage();
+                    });
+                shop_menu.addItem("Previous page",
+                    [&shop_menu]() {
+                        shop_menu.prevPage();
+                    });
+                shop_menu.run();
+         });
         if (this->appState.isAdmin) {
             this->addItem("Items Management",
                 [this]() {
-                    ItemService item_service(database);
-
                     Menu item_management_menu("Items Management");
                     item_management_menu.addItem("Show all items",
-                                                 [&item_service]() {
+                                                 [this]() {
                                                      item_service.showAllItems(true);
                                                  });
                     item_management_menu.addItem("Add item",
-                                                 [&item_service]() {
+                                                 [this]() {
                                                      item_service.addItem();
                                                  });
                     item_management_menu.addItem("Update item",
-                                                 [&item_service]() {
+                                                 [this]() {
                                                      item_service.updateItem();
                                                  });
                     item_management_menu.addItem("Delete item",
-                        [&item_service]() {
+                        [this]() {
                             item_service.deleteItem();
                         });
                     item_management_menu.run();
@@ -72,7 +84,20 @@ void MainMenu::updateMainMenu() {
     }
     else {
         this->addItem("Browsing",
-            [this](){std::cout<<"Under developing"<<std::endl;});
+            [this](){
+            ShopMenu shop_menu(item_service,0);
+                shop_menu.addItem("Cart item",
+                    [](){ std::cout << "Under development" << std::endl; });
+                shop_menu.addItem("Next page",
+                    [&shop_menu]() {
+                        shop_menu.nextPage();
+                    });
+                shop_menu.addItem("Previous page",
+                    [&shop_menu]() {
+                        shop_menu.prevPage();
+                    });
+                shop_menu.run();
+        });
         this->addItem("Login",
             [this]() {
                 if (logio.login()) {

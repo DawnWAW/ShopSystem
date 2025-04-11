@@ -10,6 +10,7 @@
 #include <iostream>
 #include <limits>
 #include <Logio.h>
+#include "ItemService.h"
 
 
 class MainMenu final : public Menu {
@@ -19,7 +20,7 @@ public:
     bool isAdmin = false;
     Account account;
   };
-  MainMenu(Database &database, Logio &logio);
+  MainMenu(Database &database, Logio &logio, ItemService &item_service);
 
   void updateMainMenu();
 
@@ -27,6 +28,7 @@ public:
 private:
     Database& database;
     Logio& logio;
+    ItemService &item_service;
     AppState appState;
 };
 

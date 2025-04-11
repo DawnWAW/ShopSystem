@@ -112,6 +112,13 @@ build CMakeFiles/ShopSystem.dir/src/module/Menu/FormMenu.cpp.o: CXX_COMPILER__Sh
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
   OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Menu
 
+build CMakeFiles/ShopSystem.dir/src/module/Menu/ShopMenu.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Menu/ShopMenu.cpp || cmake_object_order_depends_target_ShopSystem
+  DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Menu/ShopMenu.cpp.o.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -I/home/dawn/Documents/OOP/ShopSystem/include
+  OBJECT_DIR = CMakeFiles/ShopSystem.dir
+  OBJECT_FILE_DIR = CMakeFiles/ShopSystem.dir/src/module/Menu
+
 build CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o: CXX_COMPILER__ShopSystem_unscanned_Debug /home/dawn/Documents/OOP/ShopSystem/src/module/Data/Database.cpp || cmake_object_order_depends_target_ShopSystem
   DEP_FILE = CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
@@ -127,7 +134,7 @@ build CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o: CXX_COMPILER__Sh
 #############################################
 # Link the executable ShopSystem
 
-build ShopSystem: CXX_EXECUTABLE_LINKER__ShopSystem_Debug CMakeFiles/ShopSystem.dir/main.cpp.o CMakeFiles/ShopSystem.dir/src/module/Account/Account.cpp.o CMakeFiles/ShopSystem.dir/src/module/Account/Logio.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/Item.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/Cart.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/ItemService.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/Menu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/MainMenu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/FormMenu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o | /usr/lib/x86_64-linux-gnu/libsqlite3.so
+build ShopSystem: CXX_EXECUTABLE_LINKER__ShopSystem_Debug CMakeFiles/ShopSystem.dir/main.cpp.o CMakeFiles/ShopSystem.dir/src/module/Account/Account.cpp.o CMakeFiles/ShopSystem.dir/src/module/Account/Logio.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/Item.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/Cart.cpp.o CMakeFiles/ShopSystem.dir/src/module/Shop/ItemService.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/Menu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/MainMenu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/FormMenu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Menu/ShopMenu.cpp.o CMakeFiles/ShopSystem.dir/src/module/Data/Database.cpp.o | /usr/lib/x86_64-linux-gnu/libsqlite3.so
   FLAGS = -g
   LINK_LIBRARIES = /usr/lib/x86_64-linux-gnu/libsqlite3.so
   OBJECT_DIR = CMakeFiles/ShopSystem.dir
