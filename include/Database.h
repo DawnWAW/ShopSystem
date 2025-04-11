@@ -47,11 +47,11 @@ public:
 
     [[nodiscard]] std::unique_ptr<Item> getItemById(const int &id) const;
 
-    std::vector<std::unique_ptr<Item>> getItemByName(const std::string &name);
+    [[nodiscard]] std::vector<int> getItemByName(const std::string &name) const;
 
-    std::vector<std::unique_ptr<Item>> getItemByCategory(const Item::Category &category);
+    [[nodiscard]] std::vector<int> getItemByCategory(const Item::Category &category) const;
 
-    std::vector<std::unique_ptr<Item>> getItemByPrice(const double &price, const double &around = 10.0);
+    [[nodiscard]] std::vector<int> getItemByPrice(const double &min_price, const double &max_price) const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 

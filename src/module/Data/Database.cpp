@@ -258,6 +258,69 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
     return item;
 }
 
+std::vector<int> Database::getItemByName(const std::string &name) const {
+    const std::string sql = "SELECT id FROM items "
+                            "WHERE name LIKE '%" + name + "%' OR description LIKE '%" + name + "%'"
+                            "ORDER BY id;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<int> results;
+
+    if (sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        results.push_back(id);
+    }
+
+    sqlite3_finalize(stmt);
+    return results;
+}
+
+std::vector<int> Database::getItemByCategory(const Item::Category &category) const {
+    const std::string sql = "SELECT id FROM items "
+                            "WHERE category = '" + Item::category_to_string(category) + "' ORDER BY id;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<int> results;
+
+    if (sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        results.push_back(id);
+    }
+
+    sqlite3_finalize(stmt);
+    return results;
+}
+
+std::vector<int> Database::getItemByPrice(const double &min_price, const double &max_price) const {
+    const std::string sql = "SELECT id FROM items "
+                        "WHERE price BETWEEN ? AND ?"
+                        "ORDER BY id;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<int> results;
+
+    if (sqlite3_prepare_v2(this->db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    sqlite3_bind_double(stmt, 1, min_price);
+    sqlite3_bind_double(stmt, 2, max_price);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        results.push_back(id);
+    }
+
+    sqlite3_finalize(stmt);
+    return results;
+}
+
+
 sqlite3 * Database::getDB() const {
     return this->db;
 }

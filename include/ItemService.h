@@ -27,6 +27,12 @@ public:
   [[nodiscard]] std::vector<Item> queryAllItems() const;
 
   void showAllItems(bool isDetailed = false) const;
+
+  [[nodiscard]] std::vector<Item> queryItemsByName(const std::string &name) const;
+
+  [[nodiscard]] std::vector<Item> queryItemsByCategory(Item::Category category) const;
+
+  [[nodiscard]] std::vector<Item> queryItemsByPrice(const double &min_price, const double &max_price) const;
 };
 
 

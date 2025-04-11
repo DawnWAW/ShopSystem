@@ -53,6 +53,22 @@ void MainMenu::showItemService(bool isLoggedIn) const {
         [&shop_menu]() {
             shop_menu.prevPage();
         });
+    shop_menu.addItem("All items",
+        [&shop_menu, isLoggedIn]() {
+            shop_menu.showAllItems(isLoggedIn);
+        });
+    shop_menu.addItem("Search name",
+        [&shop_menu]() {
+            shop_menu.searchByName();
+        });
+    shop_menu.addItem("Search Category",
+        [&shop_menu]() {
+            shop_menu.searchByCategory();
+        });
+    shop_menu.addItem("Search price",
+        [&shop_menu]() {
+            shop_menu.searchByPrice();
+        });
     shop_menu.run();
 }
 

@@ -159,6 +159,33 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
+[[nodiscard]] std::vector<Item> ItemService::queryItemsByName(const std::string &name) const {
+    std::vector<Item> items;
+    std::vector<int> ids = database.getItemByName(name);
+    for (auto id : ids) {
+        items.push_back(*database.getItemById(id));
+    }
+    return items;
+}
+
+[[nodiscard]] std::vector<Item> ItemService::queryItemsByCategory(Item::Category category) const {
+    std::vector<Item> items;
+    std::vector<int> ids = database.getItemByCategory(category);
+    for (auto id : ids) {
+        items.push_back(*database.getItemById(id));
+    }
+    return items;
+}
+
+std::vector<Item> ItemService::queryItemsByPrice(const double &min_price,const double &max_price) const {
+    std::vector<Item> items;
+    std::vector<int> ids = database.getItemByPrice(min_price, max_price);
+    for (auto id : ids) {
+        items.push_back(*database.getItemById(id));
+    }
+    return items;
+}
+
 void ItemService::showAllItems(const bool isDetailed) const {
     for (const auto& item : queryAllItems()) {
         item.display(isDetailed);

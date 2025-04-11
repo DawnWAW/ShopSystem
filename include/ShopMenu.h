@@ -26,6 +26,10 @@ public:
     void showPage() const;
     void nextPage();
     void prevPage();
+    void showAllItems(bool isLoggedIn);
+    void searchByName();
+    void searchByCategory();
+    void searchByPrice();
 private:
     ItemService &item_service;
     std::vector<Item> shop_items;
