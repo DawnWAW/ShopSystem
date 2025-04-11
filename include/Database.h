@@ -36,12 +36,12 @@ public:
 
     int64_t insertAccount(const Account &account) const;
 
-    bool changePassword(const std::string &username, const std::string &newPassword) const;
+    [[nodiscard]] bool changePassword(const std::string &username, const std::string &newPassword) const;
 
     // database for item
     [[nodiscard]] bool addItem(const Item& item) const;
 
-    bool updateItem(const Item &newItem) const;
+    [[nodiscard]] bool updateItem(const Item &newItem) const;
 
     [[nodiscard]] bool deleteItem(int id) const;
 
@@ -52,7 +52,6 @@ public:
     std::vector<std::unique_ptr<Item>> getItemByCategory(const Item::Category &category);
 
     std::vector<std::unique_ptr<Item>> getItemByPrice(const double &price, const double &around = 10.0);
-
 
     [[nodiscard]] sqlite3 *getDB() const;
 

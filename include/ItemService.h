@@ -20,11 +20,13 @@ public:
 
   void addItem() const;
 
+  void deleteItem() const;
+
   void updateItem() const;
 
   [[nodiscard]] std::vector<Item> queryAllItems() const;
 
-  void showAllItems() const;
+  void showAllItems(bool isDetailed = false) const;
 };
 
 

@@ -19,12 +19,12 @@
     {
     const time_t created_time_in_seconds = created_time;
     const time_t updated_time_in_seconds = updated_time;
-    struct tm *local_created_time = localtime(&created_time_in_seconds);
-    struct tm *local_updated_time = localtime(&updated_time_in_seconds);
+    struct tm *local_time = localtime(&created_time_in_seconds);
     char buffer[80];
-    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_created_time);
+    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_time);
     this->created_time = buffer;
-    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_updated_time);
+    local_time = localtime(&updated_time_in_seconds);
+    strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",local_time);
     this->updated_time = buffer;
 }
 
@@ -105,24 +105,36 @@ void Item::set_state(const int state) {
     return updated_time;
 }
 
-void Item::display() const {
-    std::cout << to_string();
+void Item::display(const bool isDetailed) const {
+    std::cout << to_string(isDetailed);
+    std::cout << "=========================" << std::endl;
 }
 
-std::string Item::to_string() const {
+std::string Item::to_string(const bool isDetailed) const {
     std::ostringstream oss;
+    if (isDetailed) {
+        oss << "[" << id << "](";
+        if (!state) {
+            oss << "not ";
+        }
+        oss << "on sale)" << std::endl;
+    }
     oss << name << std::endl
         << "category: " << category_to_string(category) << std::endl
         << "price: " << std::fixed << std::setprecision(2) << price << std::endl
         << "stock: " << stock << std::endl
-        << "description: " << (description.empty()?"NULL":description) << std::endl
-        << "updated Time: " << updated_time << std::endl;
+        << "description: " << (description.empty()?"NULL":description) << std::endl;
+
+    if (isDetailed) {
+        oss << "created_time: " << created_time << std::endl
+            << "updated_time: " << updated_time << std::endl;
+    }
     return oss.str();
 }
 
 std::string Item::category_to_string(Category category) {
     switch(category) {
-        case Category::GAMES:   return "GAME";
+        case Category::GAMES:   return "GAMES";
         case Category::DAILY:   return "DAILY";
         case Category::FOOD:    return "FOOD";
         case Category::BOOKS:   return "BOOKS";
@@ -136,6 +148,18 @@ Item::Category Item::string_to_category(const std::string &category) {
     if (category == "FOOD")     return Category::FOOD;
     if (category == "BOOKS")    return Category::BOOKS;
     return Category::OTHER;
+}
+
+std::string Item::input_name(const std::string &prompt) {
+    std::string itemname;
+    do {
+        itemname = FormMenu::getStrInput(prompt);
+        if (itemname.empty()) {
+            std::cout << "Item name can not be empty";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }while (itemname.empty());
+    return itemname;
 }
 
 Item::Category Item::input_category(const std::string &prompt) {

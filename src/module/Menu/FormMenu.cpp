@@ -16,12 +16,18 @@ void FormMenu::display() const {
 }
 
 void FormMenu::run() const {
+    std::string input;
     int choice;
     display();
     while (true) {
-        std::cin >> choice;
-        // clear buffer
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(std::cin, input);
+        if (input.length() > 1 || input.empty()) {
+            std::cout << "Invalid choice, try again: " ;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        choice = input.at(0) - '0';
 
         if (choice > 0 && static_cast<size_t>(choice) <= items.size()) {
             items[choice-1].action();

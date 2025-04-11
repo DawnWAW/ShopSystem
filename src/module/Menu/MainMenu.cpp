@@ -39,17 +39,21 @@ void MainMenu::updateMainMenu() {
                     ItemService item_service(database);
 
                     Menu item_management_menu("Items Management");
-                    item_management_menu.addItem("Add item",
-                        [&item_service]() {
-                            item_service.addItem();
-                        });
-                    item_management_menu.addItem("Update item",
-                        [&item_service]() {
-                            item_service.updateItem();
-                        });
                     item_management_menu.addItem("Show all items",
+                                                 [&item_service]() {
+                                                     item_service.showAllItems(true);
+                                                 });
+                    item_management_menu.addItem("Add item",
+                                                 [&item_service]() {
+                                                     item_service.addItem();
+                                                 });
+                    item_management_menu.addItem("Update item",
+                                                 [&item_service]() {
+                                                     item_service.updateItem();
+                                                 });
+                    item_management_menu.addItem("Delete item",
                         [&item_service]() {
-                            item_service.showAllItems();
+                            item_service.deleteItem();
                         });
                     item_management_menu.run();
                 });

@@ -89,13 +89,15 @@ public:
 
     [[nodiscard]] std::string get_updated_time() const;
 
-    void display() const;
+    void display(bool isDetailed = false) const;
 
-    [[nodiscard]] std::string to_string() const;
+    [[nodiscard]] std::string to_string(bool isDetailed) const;
 
     static std::string category_to_string(Category category);
 
     [[nodiscard]] static Category string_to_category(const std::string &category) ;
+
+    [[ nodiscard ]] static std::string input_name(const std::string &prompt);
 
     [[nodiscard]] static Category input_category(const std::string &prompt);
 

@@ -8,7 +8,7 @@ ItemService::ItemService(Database &database) : database(database) {}
 void ItemService::addItem() const {
     std::cout << "Adding item: " << std::endl;
     // 1. item name
-    std::string itemName = FormMenu::getStrInput("Enter item name: ");
+    std::string itemName = Item::input_name("Enter item name: ");
 
     // 2. item category
     Item::Category category = Item::input_category("Choose item category: ");
@@ -57,6 +57,31 @@ void ItemService::addItem() const {
     ackMenu.run();
 }
 
+void ItemService::deleteItem() const {
+    std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
+    if ( item == nullptr ) {
+        std::cout << "Item not found." << std::endl;
+        return;
+    }
+
+    item->display(true);
+    FormMenu ackMenu("Are you sure to delete this item?");
+    ackMenu.addItem("Yes",
+        [this,&item]() {
+           if (database.deleteItem(item->get_id())) {
+               std::cout << "Item deleted succeeded" << std::endl;
+           }
+           else {
+                std::cout << "Item deleted failed" << std::endl;
+           }
+        });
+    ackMenu.addItem("No",
+        []() {
+            std::cout << "Item deleted canceled" << std::endl;
+        });
+    ackMenu.run();
+}
+
 void ItemService::updateItem() const {
     std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
     if ( item != nullptr ) {
@@ -83,7 +108,7 @@ void ItemService::updateItem() const {
         });
     updateMenu.addItem("Update name",
         [&item]() {
-            item->set_name(FormMenu::getStrInput("Enter new item name: "));
+            item->set_name(Item::input_name("Enter new item name: "));
             item->display();
         });
     updateMenu.addItem("Update price",
@@ -133,10 +158,9 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
-void ItemService::showAllItems() const {
+void ItemService::showAllItems(const bool isDetailed) const {
     for (const auto& item : queryAllItems()) {
-        item.display();
-        std::cout << "=========================" << std::endl;
+        item.display(isDetailed);
     }
 }
 

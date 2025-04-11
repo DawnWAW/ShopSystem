@@ -218,8 +218,21 @@ bool Database::updateItem(const Item &newItem) const {
     return success;
 }
 
+bool Database::deleteItem(int id) const {
+    const char* sql = "DELETE FROM items WHERE id = ?;";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+    sqlite3_bind_int(stmt, 1, id);
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+    return success;
+}
+
 std::unique_ptr<Item> Database::getItemById(const int &id) const {
-    const char* sql = "SELECT * FROM items WHERE id = ?";
+    const char* sql = "SELECT * FROM items WHERE id = ?;";
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
@@ -233,7 +246,17 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
         return nullptr;
     }
 
-    // 从数据库行创建 Item 对象
+    // test
+    /*std::cout << sqlite3_column_int(stmt, 0) << std::endl       // id
+        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) << std::endl // name
+        << sqlite3_column_double(stmt, 4) << std::endl   // price
+        << sqlite3_column_int(stmt, 5)<< std::endl      // stock
+        << sqlite3_column_int(stmt, 6) << std::endl
+        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) << std::endl // category
+        << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3))<< std::endl // description
+        << sqlite3_column_int64(stmt, 7) << std::endl    // created_time
+        << sqlite3_column_int64(stmt, 8)<< std::endl;*/
+
     auto item = std::make_unique<Item>(
         sqlite3_column_int(stmt, 0),      // id
         reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)), // name

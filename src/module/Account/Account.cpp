@@ -4,6 +4,9 @@
 
 #include "Account.h"
 
+#include <FormMenu.h>
+#include <iostream>
+
 Account::Account(){
     this->id = -1;
 }
@@ -46,6 +49,19 @@ void Account::set_username(const std::string &username) {
 void Account::set_password(const std::string &password) {
     this->password = password;
 }
+
+std::string Account::input_username(const std::string &prompt) {
+    std::string username;
+    do {
+        username = FormMenu::getStrInput(prompt);
+        if (username.empty()) {
+            std::cout << "Username can not be empty";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }while (username.empty());
+    return username;
+}
+
 
 std::string Account::toString() const {
     return "Username: " + username + "\nPassword: " + password;

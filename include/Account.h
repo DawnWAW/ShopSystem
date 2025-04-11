@@ -28,6 +28,8 @@ public:
     void set_username(const std::string &username);
     void set_password(const std::string &password);
 
+    [[nodiscard]] static std::string input_username(const std::string &prompt);
+
     [[nodiscard]] std::string toString() const;
 };
 

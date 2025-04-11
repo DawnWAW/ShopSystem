@@ -38,13 +38,18 @@ void Menu::display() const {
 }
 
 void Menu::run() const {
-    int choice;
+    std::string input;
     while (true) {
         display();
 
-        std::cin >> choice;
-        // clear buffer
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(std::cin, input);
+        if (input.length() > 1 || input.empty()) {
+            std::cout << "Invalid choice, try again: " ;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+
+        int choice = input.at(0) - '0';
 
         if (choice == 0) {
             break;

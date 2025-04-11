@@ -11,7 +11,7 @@ bool Logio::login() {
     Account account;
     std::cout << "=== User Login ===\n";
     // 1. get username
-    account.set_username(FormMenu::getStrInput("username: "));
+    account.set_username(Account::input_username("username: "));
 
     // 2. check if user exists
     if (database.userExists(account.getUsername())) {
