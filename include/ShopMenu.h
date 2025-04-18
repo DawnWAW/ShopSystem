@@ -4,10 +4,13 @@
 
 #ifndef SHOPMENU_H
 #define SHOPMENU_H
+#include <Cart.h>
 #include <ItemService.h>
 #include <vector>
 #include "Item.h"
 #include <cmath>
+#include <set>
+#include <sstream>
 
 
 class ShopMenu final : public Menu{
@@ -30,11 +33,16 @@ public:
     void searchByName();
     void searchByCategory();
     void searchByPrice();
+    void cartItem();
+    void updateCartItem();
+    void deleteCartItem();
+    void showCartMenu();
 private:
     ItemService &item_service;
     std::vector<Item> shop_items;
     PageView page_view;
     int view_state = 0; // 0:Browsing 1:all items 2:search by name (and by desc) 3:search by category 4:search by price
+    Cart cart;
 };
 
 

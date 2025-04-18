@@ -32,10 +32,9 @@ void MainMenu::showItemService(bool isLoggedIn) const {
     int view_state = isLoggedIn ? 1 : 0;
     ShopMenu shop_menu(item_service,view_state);
     if (isLoggedIn) {
-        // TODO: cart interface
         shop_menu.addItem("Cart item",
-            []() {
-                std::cout << "Under development" << std::endl;
+            [&shop_menu]() {
+                shop_menu.cartItem();
             });
     }
     else {
@@ -68,6 +67,10 @@ void MainMenu::showItemService(bool isLoggedIn) const {
     shop_menu.addItem("Search price",
         [&shop_menu]() {
             shop_menu.searchByPrice();
+        });
+    shop_menu.addItem("My Cart",
+        [&shop_menu]() {
+            shop_menu.showCartMenu();
         });
     shop_menu.run();
 }

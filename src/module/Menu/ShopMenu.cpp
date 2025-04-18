@@ -134,3 +134,111 @@ void ShopMenu::searchByPrice() {
     this->view_state = 4;
     setTitle(titleToken(item_price.str()));
 }
+
+void ShopMenu::cartItem() {
+    int item_index = -1;
+    const int from = page_view.current_page_number * page_view.number_per_page;
+    const int to = (from + page_view.number_per_page > page_view.item_number) ? page_view.item_number : from + page_view.number_per_page;
+    Menu item_select_menu("Which item do you want to put into cart");
+    item_select_menu.addItem(shop_items[from].get_name(),
+        [&item_index,from]() {
+            item_index = from;
+        });
+    item_select_menu.addItem(shop_items[to].get_name(),
+        [&item_index, to]() {
+            item_index = to;
+        });
+    item_select_menu.run();
+
+    if (const int item_id = shop_items[item_index].get_id();this->cart.checkItem(item_id)) {
+        FormMenu ackMenu("This item is already in cart");
+        ackMenu.addItem("Add quantity",
+            [this,item_id]() {
+                const int addition = Cart::inputItemNumber("Enter quantity");
+                const int quantity = this->cart.getCartItemQuantity(item_id);
+                this->cart.updateCartItem(item_id,quantity + addition);
+            });
+        ackMenu.addItem("Cancel",[]() {
+            std::cout << "Carting item cancelled" << std::endl;
+        });
+    }
+    else if (const int quantity = Cart::inputItemNumber("Quantity: "); quantity > 0) {
+        this->cart.addCartItem(shop_items[to],quantity);
+    }
+    else {
+        std::cout << "Quantity is zero, nothing change in cart." << std::endl;
+    }
+}
+
+void ShopMenu::updateCartItem() {
+    const int index = this->cart.inputItemIndex();
+    if (const int quantity =
+        Cart::inputItemNumber("Updated quantity[ "
+            + std::to_string(this->cart.getCartItemQuantity(index)) + " -> ? ]: "); quantity == 0) {
+        FormMenu ackMenu("You have input 0 in quantity");
+        ackMenu.addItem("Delete this item from cart",
+            [this]() {
+                this->cart.removeCartItem(index);
+            });
+        ackMenu.addItem("Cancelled",
+            [this]() {
+                std::cout << "Nothing changed" << std::endl;
+            });
+        ackMenu.run();
+    }
+    else {
+        this->cart.updateCartItem(index, quantity);
+        std::cout << "Item quantity updated" << std::endl;
+    }
+}
+
+void ShopMenu::deleteCartItem() {
+    Menu delete_menu("Which item do you want to delete cart");
+    delete_menu.addItem("Delete one item from cart",
+        [this]() {
+            const int index = this->cart.inputItemIndex();
+            this->cart.removeCartItem(index);
+            std::cout << "Item removed from cart" << std::endl;
+        });
+    delete_menu.addItem("Multi-Select Delete",
+        [this]() {
+            std::string input;
+            std::getline(std::cin, input);
+            std::istringstream iss;
+            int num;
+            std::set<int> index_set;
+            while (iss>>num) {
+                if (this->cart.isInList(num))
+                index_set.insert(num);
+            }
+
+            for (const int &index : index_set) {
+                this->cart.removeCartItem(index);
+            }
+
+            std::cout << index_set.size() <<" items removed from cart" << std::endl;
+        });
+    delete_menu.addItem("Delete all items from cart",
+        [this]() {
+            this->cart.removeAllCartItem();
+            std::cout <<  "All items removed" << std::endl;
+        });
+    delete_menu.run();
+}
+
+void ShopMenu::showCartMenu() {
+    Menu cart_menu("My cart");
+    cart_menu.addItem("Show my cart",
+        [this]() {
+            this->cart.showCart();
+        });
+    cart_menu.addItem("Update my cart",
+        [this]() {
+            this->updateCartItem();
+        });
+    cart_menu.addItem("Delete cart",
+        [this]() {
+            this->deleteCartItem();
+    });
+    cart_menu.run();
+}
