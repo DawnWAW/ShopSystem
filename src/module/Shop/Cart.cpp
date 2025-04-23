@@ -4,9 +4,23 @@
 
 #include "Cart.h"
 
+#include <utility>
+
+
+Cart::Cart(Account account): account(std::move(account)) {
+}
+
+[[nodiscard]] Cart::CartList Cart::get_cart_list() const {
+    return cart_list;
+}
+
+int Cart::get_account_id() const {
+    return this->account.getId();
+}
+
 void Cart::showCart() const {
-    int totalnumber = 0;
-    double totalprice = 0;
+    int total_number = 0;
+    double total_price = 0;
     for (const int id : cart_list.itemId_vector) {
         CartItem item = cart_list.items_map.at(id);
         std::cout << "[" << id << "] "
@@ -14,11 +28,11 @@ void Cart::showCart() const {
         << item.itemPrice << " *"
         << item.quantity << std::endl;
 
-        totalnumber += item.quantity;
-        totalprice += item.quantity*item.itemPrice;
+        total_number += item.quantity;
+        total_price += item.quantity*item.itemPrice;
     }
-    std::cout << "Total number: " << totalnumber << std::endl;
-    std::cout << "Total price: " << totalprice << std::endl;
+    std::cout << "Total number: " << total_number << std::endl;
+    std::cout << "Total price: " << total_price << std::endl;
 }
 
 bool Cart::checkItem(const int item_id) const {
@@ -39,6 +53,11 @@ void Cart::addCartItem(const Item &item, int quantity) {
 
     this->cart_list.itemId_vector.push_back(new_item.itemId);
     this->cart_list.items_map[new_item.itemId] = new_item;
+}
+
+void Cart::addCartItem(const CartItem &cart_item) {
+    this->cart_list.itemId_vector.push_back(cart_item.itemId);
+    this->cart_list.items_map[cart_item.itemId] = cart_item;
 }
 
 void Cart::removeCartItem(const int index) {
@@ -73,7 +92,7 @@ void Cart::showCartMenu() const {
 }
 
 int Cart::inputItemIndex() const {
-    int index = -1;
+    int index;
     this->showCart();
     while (true) {
         index = FormMenu::getIntInput("Enter index: ");

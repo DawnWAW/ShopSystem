@@ -28,22 +28,8 @@ void MainMenu::showAppState() const {
     std::cout << std::endl;
 }
 
-void MainMenu::showItemService(bool isLoggedIn) const {
-    int view_state = isLoggedIn ? 1 : 0;
-    ShopMenu shop_menu(item_service,view_state);
-    if (isLoggedIn) {
-        shop_menu.addItem("Cart item",
-            [&shop_menu]() {
-                shop_menu.cartItem();
-            });
-    }
-    else {
-        shop_menu.addItem("Cart item",
-          []() {
-              std::cout << "Login first" << std::endl;
-              std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            });
-    }
+void MainMenu::showItemService(const AppState &app_state) const {
+    ShopMenu shop_menu(item_service,app_state);
     shop_menu.addItem("Next page",
         [&shop_menu]() {
             shop_menu.nextPage();
@@ -53,8 +39,8 @@ void MainMenu::showItemService(bool isLoggedIn) const {
             shop_menu.prevPage();
         });
     shop_menu.addItem("All items",
-        [&shop_menu, isLoggedIn]() {
-            shop_menu.showAllItems(isLoggedIn);
+        [&shop_menu, app_state]() {
+            shop_menu.showAllItems(app_state.isLoggedIn);
         });
     shop_menu.addItem("Search name",
         [&shop_menu]() {
@@ -68,11 +54,22 @@ void MainMenu::showItemService(bool isLoggedIn) const {
         [&shop_menu]() {
             shop_menu.searchByPrice();
         });
-    shop_menu.addItem("My Cart",
-        [&shop_menu]() {
-            shop_menu.showCartMenu();
-        });
+    if (app_state.isLoggedIn) {
+        shop_menu.addItem("Cart item",
+            [&shop_menu]() {
+                shop_menu.cartItem();
+            });
+        shop_menu.addItem("My Cart",
+    [&shop_menu]() {
+        shop_menu.showCartMenu();
+    });
+    }
     shop_menu.run();
+
+    if (app_state.isLoggedIn) {
+        // update cart to database
+        shop_menu.updateCart();
+    }
 }
 
 void MainMenu::showItemManagement() const {
@@ -96,7 +93,7 @@ void MainMenu::showItemManagement() const {
     item_management_menu.run();
 }
 
-void MainMenu::setAppState(bool isLoggedIn, const Account &account) {
+void MainMenu::setAppState(const bool isLoggedIn, const Account &account) {
     this->appState.isLoggedIn = isLoggedIn;
     this->appState.account = account;
     this->appState.isAdmin = account.getUsername() == "root";
@@ -118,7 +115,7 @@ void MainMenu::updateMainMenu() {
         else {
             this->addItem("Shopping",
                 [this](){
-                    this->showItemService(true);
+                    this->showItemService(appState);
                 });
             this->addItem("Change Password",
             [this](){ logio.changePassword(); });
@@ -138,7 +135,7 @@ void MainMenu::updateMainMenu() {
         // browse items
         this->addItem("Browsing",
             [this](){
-                this->showItemService(false);
+                this->showItemService(appState);
         });
         // login
         this->addItem("Login",

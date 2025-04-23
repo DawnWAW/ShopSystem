@@ -4,8 +4,11 @@
 
 #ifndef ITEMSERVICE_H
 #define ITEMSERVICE_H
+
+
 #include "Database.h"
 #include "Item.h"
+#include "Cart.h"
 #include "FormMenu.h"
 #include <iostream>
 #include <limits>
@@ -18,6 +21,7 @@ private:
 public:
   explicit ItemService(Database &database);
 
+  // admin interfaces
   void addItem() const;
 
   void deleteItem() const;
@@ -26,6 +30,7 @@ public:
 
   [[nodiscard]] std::vector<Item> queryAllItems() const;
 
+  // shopping interface
   void showAllItems(bool isDetailed = false) const;
 
   [[nodiscard]] std::vector<Item> queryItemsByName(const std::string &name) const;
@@ -33,6 +38,16 @@ public:
   [[nodiscard]] std::vector<Item> queryItemsByCategory(Item::Category category) const;
 
   [[nodiscard]] std::vector<Item> queryItemsByPrice(const double &min_price, const double &max_price) const;
+
+  // cart interface
+  [[nodiscard]] Cart initCart(const Account &account) const;
+
+  [[nodiscard]] bool deleteCart(const int account_id) const;
+
+  [[nodiscard]] bool updateCart(const Cart &cart) const;
+
+
+
 };
 
 

@@ -186,6 +186,43 @@ std::vector<Item> ItemService::queryItemsByPrice(const double &min_price,const d
     return items;
 }
 
+Cart ItemService::initCart(const Account &account) const {
+
+    Cart cart(account);
+    const auto cart_items = database.getCartItems(account.getId());
+    for (const auto &item : cart_items) {
+        cart.addCartItem(item);
+    }
+    return cart;
+}
+
+bool ItemService::deleteCart(const int account_id) const {
+    return  database.deleteCartItems(account_id);
+}
+
+bool ItemService::updateCart(const Cart &cart) const {
+    const int account_id = cart.get_account_id();
+    // check account
+    if (account_id <= 0) {
+        return false;
+    }
+
+    // remove previous data
+    if (!this->deleteCart(account_id)) {
+        throw std::runtime_error("Failed to delete cart");
+    }
+
+    std::vector<Cart::CartItem> cart_items;
+    auto [itemId_vector, items_map] = cart.get_cart_list();
+    for (const int id : itemId_vector) {
+        Cart::CartItem item;
+        item.itemId = items_map[id].itemId;
+        item.quantity = items_map[id].quantity;
+        cart_items.push_back(item);
+    }
+    return  database.setCartItems(cart_items,account_id);
+}
+
 void ItemService::showAllItems(const bool isDetailed) const {
     for (const auto& item : queryAllItems()) {
         item.display(isDetailed);

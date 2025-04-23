@@ -24,7 +24,7 @@ public:
 
     void updateMainMenu();
     void showAppState() const;
-    void showItemService(bool isLoggedIn) const;
+    void showItemService(const AppState &app_state) const;
     void showItemManagement() const;
     void setAppState(bool isLoggedIn, const Account &account);
 

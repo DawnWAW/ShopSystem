@@ -44,6 +44,13 @@ Database& Database::init_table() {
             "updated_time INTEGER not null,"
             "check (price >= 0),"
             "check (stock >= 0));"
+    )
+    .execute("create table if not exists carts("
+            "id  INTEGER primary key autoincrement,"
+            "item_id      INTEGER    not null,"
+            "account_id   INTEGER    not null,"
+            "quantity     INTEGER    not null,"
+            "check (quantity >= 0));"
     );
     return *this;
 }
@@ -320,6 +327,85 @@ std::vector<int> Database::getItemByPrice(const double &min_price, const double 
     return results;
 }
 
+std::vector<Cart::CartItem> Database::getCartItems(int account_id) const {
+    const char* sql = "SELECT  c.item_id, i.name, c.quantity, i.price from carts c, items i where c.account_id = ? and c.item_id == i.id;";
+    sqlite3_stmt* stmt = nullptr;
+    std::vector<Cart::CartItem> cart_items;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    sqlite3_bind_int(stmt, 1, account_id);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        Cart::CartItem item;
+        item.itemId = sqlite3_column_int(stmt, 0);
+        item.itemName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)),
+        item.quantity = sqlite3_column_int(stmt, 2);
+        item.itemPrice = sqlite3_column_double(stmt, 3);
+        cart_items.push_back(item);
+    }
+
+    sqlite3_finalize(stmt);
+    return cart_items;
+}
+
+bool Database::deleteCartItems(int account_id) const {
+    const char* sql = "DELETE FROM carts WHERE account_id = ?;";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+    sqlite3_bind_int(stmt, 1, account_id);
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+    return success;
+}
+
+
+bool Database::setCartItems(const std::vector<Cart::CartItem> &cart_items, int account_id) const {
+    const char* sql =
+        "INSERT INTO carts (item_id, account_id, quantity) "
+        "VALUES (?, ?, ?)";
+
+    sqlite3_stmt* stmt;
+
+    // 开始事务
+    if (sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    // 准备SQL语句
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+        return false;
+    }
+
+    // 绑定并执行每条数据
+    for (const auto& item : cart_items) {
+        sqlite3_bind_int(stmt, 1, item.itemId);
+        sqlite3_bind_int(stmt, 2, account_id);
+        sqlite3_bind_int(stmt, 3, item.quantity);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            sqlite3_finalize(stmt);
+            sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+            return false;
+        }
+
+        sqlite3_reset(stmt);  // 重置语句以便下次使用
+    }
+
+    // 清理并提交事务
+    sqlite3_finalize(stmt);
+    if (sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    return true;
+}
 
 sqlite3 * Database::getDB() const {
     return this->db;

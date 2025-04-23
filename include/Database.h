@@ -4,12 +4,12 @@
 
 #ifndef DATABASE_H
 #define DATABASE_H
-#include <optional>
 #include <sqlite3.h>
 #include <string>
 #include <vector>
 #include "Account.h"
 #include "Item.h"
+#include "Cart.h"
 #include <memory>
 
 
@@ -52,6 +52,13 @@ public:
     [[nodiscard]] std::vector<int> getItemByCategory(const Item::Category &category) const;
 
     [[nodiscard]] std::vector<int> getItemByPrice(const double &min_price, const double &max_price) const;
+
+    // database for cart
+    [[nodiscard]] std::vector<Cart::CartItem> getCartItems(int account_id) const;
+
+    [[nodiscard]] bool deleteCartItems(int account_id) const;
+
+    [[nodiscard]] bool setCartItems(const std::vector<Cart::CartItem> &cart_items, int account_id) const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 

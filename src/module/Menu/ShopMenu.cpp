@@ -5,11 +5,15 @@
 #include "ShopMenu.h"
 
 
-ShopMenu::ShopMenu(ItemService &item_service, const int view_state):  item_service(item_service),view_state(view_state) {
+ShopMenu::ShopMenu(ItemService &item_service, const MainMenu::AppState &app_state):
+item_service(item_service),view_state(app_state.isLoggedIn ? 1 : 0),cart(app_state.account) {
     shop_items = item_service.queryAllItems();
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
     setTitle(titleToken());
+    if (app_state.isLoggedIn) {
+        this->cart = item_service.initCart(app_state.account);
+    }
 }
 
 std::string ShopMenu::titleToken(const std::string &token ) const {
@@ -91,7 +95,7 @@ void ShopMenu::prevPage() {
         this->page_view.current_page_number--;
 }
 
-void ShopMenu::showAllItems(bool isLoggedIn) {
+void ShopMenu::showAllItems(const bool isLoggedIn) {
     this->shop_items = this->item_service.queryAllItems();
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.current_page_number = 0;
@@ -101,7 +105,7 @@ void ShopMenu::showAllItems(bool isLoggedIn) {
 }
 
 void ShopMenu::searchByName(){
-    std::string item_name = Item::input_name("Search item by name: ");
+    const std::string item_name = Item::input_name("Search item by name: ");
     this->shop_items = this->item_service.queryItemsByName(item_name);
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.current_page_number = 0;
@@ -121,8 +125,8 @@ void ShopMenu::searchByCategory() {
 }
 
 void ShopMenu::searchByPrice() {
-    double min_price = Item::input_price("min price: ");
-    double max_price = Item::input_price("max price: ");
+    const double min_price = Item::input_price("min price: ");
+    const double max_price = Item::input_price("max price: ");
     std::ostringstream item_price;
     item_price << min_price;
     item_price << "-";
@@ -177,7 +181,7 @@ void ShopMenu::updateCartItem() {
             + std::to_string(this->cart.getCartItemQuantity(index)) + " -> ? ]: "); quantity == 0) {
         FormMenu ackMenu("You have input 0 in quantity");
         ackMenu.addItem("Delete this item from cart",
-            [this]() {
+            [this,index]() {
                 this->cart.removeCartItem(index);
             });
         ackMenu.addItem("Cancelled",
@@ -242,3 +246,10 @@ void ShopMenu::showCartMenu() {
     });
     cart_menu.run();
 }
+
+void ShopMenu::updateCart() {
+    if (!item_service.updateCart(this->cart)) {
+        throw std::runtime_error("Failed to update cart");
+    }
+}
+

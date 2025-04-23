@@ -8,6 +8,7 @@
 #include <ItemService.h>
 #include <vector>
 #include "Item.h"
+#include "MainMenu.h"
 #include <cmath>
 #include <set>
 #include <sstream>
@@ -22,7 +23,7 @@ public:
         int total_pages = 0;
     };
 
-    explicit ShopMenu(ItemService &item_service, int view_state = 0);
+    explicit ShopMenu(ItemService &item_service, const MainMenu::AppState &app_state);
     [[nodiscard]] std::string titleToken(const std::string &token= "") const;
     void display() const override;
     void run() const override;
@@ -37,6 +38,7 @@ public:
     void updateCartItem();
     void deleteCartItem();
     void showCartMenu();
+    void updateCart();
 private:
     ItemService &item_service;
     std::vector<Item> shop_items;
