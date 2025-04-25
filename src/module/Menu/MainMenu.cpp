@@ -30,13 +30,13 @@ void MainMenu::showAppState() const {
 
 void MainMenu::showItemService(const AppState &app_state) const {
     ShopMenu shop_menu(item_service,app_state);
-    shop_menu.addItem("Next page",
-        [&shop_menu]() {
-            shop_menu.nextPage();
-        });
     shop_menu.addItem("Previous page",
         [&shop_menu]() {
             shop_menu.prevPage();
+        });
+    shop_menu.addItem("Next page",
+        [&shop_menu]() {
+            shop_menu.nextPage();
         });
     shop_menu.addItem("All items",
         [&shop_menu, app_state]() {
@@ -122,7 +122,7 @@ void MainMenu::updateMainMenu() {
         }
 
         // logout
-        this->addItem("Logout",
+        this->addItem("Logout("+appState.account.getUsername()+")",
             [this]() {
                 logio.logout();
                 this->setAppState(false,logio.current_account());

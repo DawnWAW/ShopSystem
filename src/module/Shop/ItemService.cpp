@@ -88,9 +88,11 @@ void ItemService::updateItem() const {
     if ( item != nullptr ) {
         std::cout << "Item info:" << std::endl;
         item->display();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     else {
         std::cout << "Item not found." << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return;
     }
 

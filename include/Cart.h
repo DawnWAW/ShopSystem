@@ -10,6 +10,7 @@
 #include <vector>
 #include <unordered_map>
 #include "Menu.h"
+#include <set>
 
 
 class Cart {
@@ -28,11 +29,13 @@ public:
     explicit Cart(Account account);
     [[nodiscard]] CartList get_cart_list() const;
     int get_account_id() const;
+    bool isCartEmpty() const;
     void showCart() const;
     bool checkItem(const int item_id) const;
     bool isInList(const int index) const;
     void addCartItem(const Item &item, int quantity);
     void addCartItem(const CartItem &cart_item);
+    void removeCartItemById(int id);
     void removeCartItem(const int index);
     void removeAllCartItem();
     void updateCartItem(const int index,const int quantity);

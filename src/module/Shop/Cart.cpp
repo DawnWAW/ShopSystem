@@ -4,6 +4,7 @@
 
 #include "Cart.h"
 
+
 #include <utility>
 
 
@@ -18,21 +19,26 @@ int Cart::get_account_id() const {
     return this->account.getId();
 }
 
+bool Cart::isCartEmpty() const {
+    return this->cart_list.itemId_vector.empty();
+}
+
 void Cart::showCart() const {
     int total_number = 0;
     double total_price = 0;
-    for (const int id : cart_list.itemId_vector) {
-        CartItem item = cart_list.items_map.at(id);
-        std::cout << "[" << id << "] "
-        << item.itemName << " $"
-        << item.itemPrice << " *"
-        << item.quantity << std::endl;
+    for (int i=0;i<cart_list.itemId_vector.size();++i) {
+        CartItem item = cart_list.items_map.at(cart_list.itemId_vector.at(i));
+        std::cout << "[" << i+1 << "]"
+        << item.itemName
+        << " [Price] " << item.itemPrice <<"$ "
+        << " [Quantity] " << item.quantity
+        << std::endl;
 
         total_number += item.quantity;
         total_price += item.quantity*item.itemPrice;
     }
-    std::cout << "Total number: " << total_number << std::endl;
-    std::cout << "Total price: " << total_price << std::endl;
+    std::cout << "[Total number] " << total_number << std::endl;
+    std::cout << "[Total price] " << total_price << std::endl;
 }
 
 bool Cart::checkItem(const int item_id) const {
@@ -40,7 +46,7 @@ bool Cart::checkItem(const int item_id) const {
 }
 
 bool Cart::isInList(const int index) const {
-    return this->cart_list.itemId_vector.size() > index;
+    return this->cart_list.itemId_vector.size() > index && index>=0;
 }
 
 
@@ -60,15 +66,18 @@ void Cart::addCartItem(const CartItem &cart_item) {
     this->cart_list.items_map[cart_item.itemId] = cart_item;
 }
 
-void Cart::removeCartItem(const int index) {
-    const int id = cart_list.itemId_vector.at(index);
-    this->cart_list.itemId_vector.erase(this->cart_list.itemId_vector.begin() + index);
+void Cart::removeCartItemById(const int id) {
+    std::erase(this->cart_list.itemId_vector,id);
     this->cart_list.items_map.erase(id);
 }
 
+void Cart::removeCartItem(const int index) {
+    removeCartItemById(this->cart_list.itemId_vector[index]);
+}
+
 void Cart::removeAllCartItem() {
-    for (const int &index :  this->cart_list.itemId_vector) {
-        this->removeCartItem(index);
+    for (const int &id :  this->cart_list.itemId_vector) {
+        this->removeCartItemById(id);
     }
 }
 
@@ -92,10 +101,9 @@ void Cart::showCartMenu() const {
 }
 
 int Cart::inputItemIndex() const {
-    int index;
     this->showCart();
     while (true) {
-        index = FormMenu::getIntInput("Enter index: ");
+        int index = FormMenu::getIntInput("Enter index: ") - 1;
         if (this->isInList(index)) {
             return index;
         }

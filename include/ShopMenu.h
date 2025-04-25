@@ -38,7 +38,7 @@ public:
     void updateCartItem();
     void deleteCartItem();
     void showCartMenu();
-    void updateCart();
+    void updateCart() const;
 private:
     ItemService &item_service;
     std::vector<Item> shop_items;
