@@ -8,7 +8,7 @@
 
 
 // read from database
-[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock, const int state ,const Category category, const std::string &description, const int64_t &created_time, const int64_t &updated_time)
+[[nodiscard]] Item::Item(const int id, const std::string &name, const double price, const int stock, const int state ,const std::string category, const std::string &description, const int64_t &created_time, const int64_t &updated_time)
     : id(id),
       name(name),
       category(category),
@@ -29,7 +29,7 @@
 }
 
 // create by admin
-Item::Item(const std::string &name, double price, int stock, int state, Category category, const std::string &description)
+Item::Item(const std::string &name, double price, int stock, int state, std::string category, const std::string &description)
     : name(name),
       category(category),
       description(description),
@@ -57,11 +57,11 @@ void Item::set_name(const std::string &name) {
     this->name = name;
 }
 
-[[nodiscard]] Item::Category Item::get_category() const {
+[[nodiscard]] std::string Item::get_category() const {
     return category;
 }
 
-void Item::set_category(const Item::Category category) {
+void Item::set_category(const std::string &category) {
     this->category = category;
 }
 
@@ -120,7 +120,7 @@ std::string Item::to_string(const bool isDetailed) const {
         oss << "on sale)" << std::endl;
     }
     oss << name << std::endl
-        << "category: " << category_to_string(category) << std::endl
+        << "category: " << category << std::endl
         << "price: " << std::fixed << std::setprecision(2) << price << std::endl
         << "stock: " << stock << std::endl
         << "description: " << (description.empty()?"NULL":description) << std::endl;
@@ -161,15 +161,19 @@ std::string Item::input_name(const std::string &prompt) {
     return itemname;
 }
 
-Item::Category Item::input_category(const std::string &prompt) {
-    Item::Category category;
+std::string Item::input_category(const std::string &prompt) {
+    std::string category;
     FormMenu category_menu(prompt);
-    for (size_t i = 0; i < 5; i++) {
+    for (size_t i = 0; i < 4; i++) {
         category_menu.addItem(Item::category_to_string(static_cast<Item::Category>(i)),
             [&category, i]() {
-                category = static_cast<Item::Category>(i);
+                category = category_to_string(static_cast<Item::Category>(i));
             });
     }
+    category_menu.addItem("OTHER",
+        [&category]() {
+            category = FormMenu::getStrInput("Enter new item category: ");
+        });
     category_menu.run();
     return category;
 }

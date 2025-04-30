@@ -176,7 +176,7 @@ bool Database::addItem(const Item &item) const {
     int paramIndex = 1;
 
     sqlite3_bind_text(stmt, paramIndex++, item.get_name().c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, paramIndex++, Item::category_to_string(item.get_category()).c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, paramIndex++, item.get_category().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, paramIndex++, item.get_description().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, paramIndex++, item.get_price());
     sqlite3_bind_int(stmt, paramIndex++, item.get_stock());
@@ -211,7 +211,7 @@ bool Database::updateItem(const Item &newItem) const {
     sqlite3_bind_double(stmt, paramIndex++, newItem.get_price());
     sqlite3_bind_int(stmt, paramIndex++, newItem.get_stock());
     sqlite3_bind_int(stmt, paramIndex++, newItem.get_state());
-    sqlite3_bind_text(stmt, paramIndex++, Item::category_to_string(newItem.get_category()).c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, paramIndex++, newItem.get_category().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, paramIndex++, newItem.get_description().c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, paramIndex, newItem.get_id());
 
@@ -255,7 +255,7 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
         sqlite3_column_double(stmt, 4),   // price
         sqlite3_column_int(stmt, 5),      // stock
         sqlite3_column_int(stmt, 6),
-        Item::string_to_category(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))), // category
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)), // category
         reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)), // description
         sqlite3_column_int64(stmt, 7),    // created_time
         sqlite3_column_int64(stmt, 8)     // updated_time
@@ -285,9 +285,9 @@ std::vector<int> Database::getItemByName(const std::string &name) const {
     return results;
 }
 
-std::vector<int> Database::getItemByCategory(const Item::Category &category) const {
+std::vector<int> Database::getItemByCategory(const std::string &category) const {
     const std::string sql = "SELECT id FROM items "
-                            "WHERE category = '" + Item::category_to_string(category) + "' ORDER BY id;";
+                            "WHERE category LIKE '%" + category + "%' ORDER BY id;";
     sqlite3_stmt* stmt = nullptr;
     std::vector<int> results;
 

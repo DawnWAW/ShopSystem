@@ -25,18 +25,18 @@ public:
 
 
     // read from database
-    [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const Category category, const std::string &description, const int64_t &created_time, const int64_t &updated_time);
+    [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const std::string category, const std::string &description, const int64_t &created_time, const int64_t &updated_time);
 
 
     // create by admin
-    Item(const std::string &name, double price, int stock, const int state, Category category = Category::OTHER, const std::string &description = "");
+    Item(const std::string &name, double price, int stock, const int state, std::string category, const std::string &description = "");
 
 private:
     int id;
 
     std::string name;
 
-    Category category;
+    std::string category;
 
     std::string description;
 
@@ -61,9 +61,9 @@ public:
 
     void set_name(const std::string &name);
 
-    [[nodiscard]] Category get_category() const;
+    [[nodiscard]] std::string get_category() const;
 
-    void set_category(Category category);
+    void set_category(const std::string &category);
 
     [[nodiscard]] std::string get_description() const;
 
@@ -99,7 +99,7 @@ public:
 
     [[ nodiscard ]] static std::string input_name(const std::string &prompt);
 
-    [[nodiscard]] static Category input_category(const std::string &prompt);
+    [[nodiscard]] static std::string input_category(const std::string &prompt);
 
     [[nodiscard]] static double input_price(const std::string &prompt);
 

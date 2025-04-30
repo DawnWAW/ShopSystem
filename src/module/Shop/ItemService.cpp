@@ -11,7 +11,7 @@ void ItemService::addItem() const {
     std::string itemName = Item::input_name("Enter item name: ");
 
     // 2. item category
-    Item::Category category = Item::input_category("Choose item category: ");
+    std::string category = Item::input_category("Choose item category: ");
 
     // 3. description
     std::string description = FormMenu::getStrInput("Enter item description (can be null): ");
@@ -30,7 +30,7 @@ void ItemService::addItem() const {
     std::cout << "========================" << std::endl;
     std::cout << "Item Info: " <<std::endl
     << "ItemName: " << itemName << std::endl
-    << "Category: " << Item::category_to_string(category) << std::endl
+    << "Category: " << category << std::endl
     << "Description: " << description << std::endl
     << "Price: " << price << std::endl
     << "Stock: " << stock << std::endl;
@@ -170,7 +170,7 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
-[[nodiscard]] std::vector<Item> ItemService::queryItemsByCategory(Item::Category category) const {
+[[nodiscard]] std::vector<Item> ItemService::queryItemsByCategory(const std::string &category) const {
     std::vector<Item> items;
     std::vector<int> ids = database.getItemByCategory(category);
     for (auto id : ids) {

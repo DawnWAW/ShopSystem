@@ -121,7 +121,7 @@ void ShopMenu::searchByCategory() {
     page_view.current_page_number = 0;
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
     this->view_state = 3;
-    setTitle(titleToken(Item::category_to_string(category)));
+    setTitle(titleToken(category));
 }
 
 void ShopMenu::searchByPrice() {

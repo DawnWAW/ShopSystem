@@ -28,8 +28,7 @@ public:
 
     Database& execute(const std::string &sql);
 
-    [[nodiscard]] std::vector<int> queryAllId(const std::string &table) const;
-
+    // database for account
     [[nodiscard]] bool userExists(const std::string &username) const;
 
     [[nodiscard]] Account getAccount(const std::string &username) const;
@@ -39,6 +38,8 @@ public:
     [[nodiscard]] bool changePassword(const std::string &username, const std::string &newPassword) const;
 
     // database for item
+    [[nodiscard]] std::vector<int> queryAllId(const std::string &table) const;
+
     [[nodiscard]] bool addItem(const Item& item) const;
 
     [[nodiscard]] bool updateItem(const Item &newItem) const;
@@ -49,7 +50,7 @@ public:
 
     [[nodiscard]] std::vector<int> getItemByName(const std::string &name) const;
 
-    [[nodiscard]] std::vector<int> getItemByCategory(const Item::Category &category) const;
+    [[nodiscard]] std::vector<int> getItemByCategory(const std::string &category) const;
 
     [[nodiscard]] std::vector<int> getItemByPrice(const double &min_price, const double &max_price) const;
 
@@ -59,6 +60,8 @@ public:
     [[nodiscard]] bool deleteCartItems(int account_id) const;
 
     [[nodiscard]] bool setCartItems(const std::vector<Cart::CartItem> &cart_items, int account_id) const;
+
+
 
     [[nodiscard]] sqlite3 *getDB() const;
 
