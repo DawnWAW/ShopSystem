@@ -23,6 +23,10 @@ bool Cart::isCartEmpty() const {
     return this->cart_list.itemId_vector.empty();
 }
 
+bool Cart::is_cart_modified() const {
+    return isCartModified;
+}
+
 void Cart::showCart() const {
     if (this->isCartEmpty()) {
         FormMenu::noticeTheEnter("My cart is Empty");
@@ -55,7 +59,7 @@ bool Cart::isInList(const int index) const {
 }
 
 
-void Cart::addCartItem(const Item &item, int quantity) {
+void Cart::addCartItem(const Item &item, const int quantity) {
     CartItem new_item;
     new_item.itemId = item.get_id();
     new_item.itemName = item.get_name();
@@ -64,6 +68,7 @@ void Cart::addCartItem(const Item &item, int quantity) {
 
     this->cart_list.itemId_vector.push_back(new_item.itemId);
     this->cart_list.items_map[new_item.itemId] = new_item;
+    this->isCartModified = true;
 }
 
 void Cart::addCartItem(const CartItem &cart_item) {
@@ -74,35 +79,28 @@ void Cart::addCartItem(const CartItem &cart_item) {
 void Cart::removeCartItemById(const int id) {
     std::erase(this->cart_list.itemId_vector,id);
     this->cart_list.items_map.erase(id);
+    this->isCartModified = true;
 }
 
 void Cart::removeCartItem(const int index) {
     removeCartItemById(this->cart_list.itemId_vector[index]);
+    this->isCartModified = true;
 }
 
 void Cart::removeAllCartItem() {
     for (const int &id :  this->cart_list.itemId_vector) {
         this->removeCartItemById(id);
     }
+    this->isCartModified = true;
 }
 
 void Cart::updateCartItem(const int index, const int quantity) {
     this->cart_list.items_map[this->cart_list.itemId_vector[index]].quantity = quantity;
+    this->isCartModified = true;
 }
 
 int Cart::getCartItemQuantity(const int index) const {
     return this->cart_list.items_map.at(this->cart_list.itemId_vector[index]).quantity;
-}
-
-void Cart::showCartMenu() const {
-    Menu cart_menu("My cart");
-    cart_menu.addItem("Cart item: ",
-        [this]() {
-            if (const int cart_id = FormMenu::getIntInput("Enter cart id: "); this->cart_list.items_map.contains(cart_id)) {
-                std::cout << "Item is already in your cart, do you want to ";
-            }
-        });
-
 }
 
 int Cart::inputItemIndex() const {

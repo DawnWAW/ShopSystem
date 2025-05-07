@@ -24,17 +24,19 @@ bool Logio::login() {
                 if (i) {
                     std::cout << "Wrong password!" << std::endl
                      << "You still have "<< i <<" times to try." <<std::endl;
+                    FormMenu::noticeTheEnter("");
                 }
             }
             else {
                 // password right, login success
-                std::cout << "Login successful!" << std::endl;
+                std::cout << "Login succeeded!" << std::endl;
                 this->set_current_account(account);
                 return true;
             }
         }
         // password input wrong too many times, login fail
         std::cout << "Login failed!" << std::endl;
+        FormMenu::noticeTheEnter("");
         return false;
     }
     // user doesn't exist, ask if user want to register
@@ -47,18 +49,18 @@ bool Logio::login() {
                 account.set_password(FormMenu::getStrInput("Set your password: "));
                 // add userdata to db
                 if (database.insertAccount(account)) {
-                    std::cout << "Registration successful!" << std::endl
+                    std::cout << "Registration succeeded!" << std::endl
                     << account.toString() << std::endl
                     << "You can now go to login" << std::endl;
+                    FormMenu::noticeTheEnter("");
                 }
                 else {
                     std::cout << "Registration failed!" << std::endl;
+                    FormMenu::noticeTheEnter("");
                 }
             });
         ackMenu.addItem("No"
-            ,[]() {
-                std::cout << "Register cancelled"<<std::endl;
-            });
+            ,[]() {});
         ackMenu.run();
 
         // do not register, return false

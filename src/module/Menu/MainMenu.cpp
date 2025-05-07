@@ -96,18 +96,21 @@ void MainMenu::showItemManagement() const {
     item_management_menu.addItem("Show all items",
                                  [this]() {
                                      item_service.showAllItems(true);
+                                     FormMenu::noticeTheEnter("");
                                  });
     item_management_menu.addItem("Add item",
                                  [this]() {
                                      item_service.addItem();
+                                     FormMenu::noticeTheEnter("");
                                  });
     item_management_menu.addItem("Update item",
                                  [this]() {
                                      item_service.updateItem();
                                  });
     item_management_menu.addItem("Delete item",
-        [this]() {
-            item_service.deleteItem();
+                                [this]() {
+                                    item_service.deleteItem();
+                                    FormMenu::noticeTheEnter("");
         });
     item_management_menu.run();
 }
@@ -137,7 +140,10 @@ void MainMenu::updateMainMenu() {
                     this->showItemService(appState);
                 });
             this->addItem("Change Password",
-            [this](){ logio.changePassword(); });
+                [this]() {
+                    logio.changePassword();
+                    FormMenu::noticeTheEnter("");
+            });
         }
 
         // logout
@@ -146,7 +152,6 @@ void MainMenu::updateMainMenu() {
                 logio.logout();
                 this->setAppState(false,logio.current_account());
                 this->updateMainMenu();
-                this->showAppState();
             });
     }
     // not login options
@@ -163,6 +168,7 @@ void MainMenu::updateMainMenu() {
                     this->setAppState(true,logio.current_account());
                     this->updateMainMenu();
                     this->showAppState();
+                    FormMenu::noticeTheEnter("");
                 }
             });
     }

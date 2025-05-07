@@ -85,71 +85,49 @@ void ItemService::deleteItem() const {
 
 void ItemService::updateItem() const {
     std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
-    if ( item != nullptr ) {
-        std::cout << "Item info:" << std::endl;
-        item->display();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-    else {
-        std::cout << "Item not found." << std::endl;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if ( item == nullptr ){
+        FormMenu::noticeTheEnter("Item not found");
         return;
     }
 
     Menu updateMenu("Update item options: ");
-    updateMenu.addItem("Choose other item",
-        [&item,this]() {
-            item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
-
-            if ( item != nullptr ) {
-              std::cout << "Item info:" << std::endl;
-              item->display();
-            }
-            else {
-              std::cout << "Item not found." << std::endl;
-            }
-        });
     updateMenu.addItem("Update name",
         [&item]() {
             item->set_name(Item::input_name("Enter new item name: "));
-            item->display();
         });
     updateMenu.addItem("Update price",
                        [&item]() {
                            item->set_price(Item::input_price("Enter new item price: "));
-                           item->display();
                        });
     updateMenu.addItem("Update stock",
                        [&item]() {
                            item->set_stock(Item::input_stock("Enter new item stock: "));
-                           item->display();
                        });
     updateMenu.addItem("Update state",
                        [&item]() {
                            item->set_state(Item::input_state("Choose new item state: "));
-                           item->display();
                        });
     updateMenu.addItem("Update category",
                        [&item]() {
                             item->set_category(Item::input_category("Choose new item category: "));
-                            item->display();
                        });
     updateMenu.addItem("Update description",
                        [&item]() {
                            item->set_description(FormMenu::getStrInput("Enter new item description: "));
-                           item->display();
                        });
     updateMenu.addItem("Submit",
-        [&item, this]() {
-            if (database.updateItem(*item)) {
-                item->display();
-                std::cout << "Item update succeeded" << std::endl;
-            }
-            else {
-                std::cout << "Item update failed" << std::endl;
-            }
-        });
-    updateMenu.run();
+                        [&item, this]() {
+                            if (database.updateItem(*item)) {
+                                std::cout << "Item update succeeded" << std::endl;
+                            }
+                            else {
+                                std::cout << "Item update failed" << std::endl;
+                            }
+                            FormMenu::noticeTheEnter("");
+                        });
+    updateMenu.run([&item]() {
+        item->display();
+    });
 }
 
 std::vector<Item> ItemService::queryAllItems() const {

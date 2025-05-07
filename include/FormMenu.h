@@ -9,11 +9,11 @@
 #include <limits>
 
 
-class FormMenu final : public Menu{
+class FormMenu final : public Menu {
 public:
     explicit FormMenu(const std::string &prompt);
-    void display() const override;
-    void run() const override;
+    void display() const;
+    void run() const;
     static std::string getStrInput(const std::string &prompt);
     static double getDoubleInput(const std::string &prompt);
     static int getIntInput(const std::string &prompt);

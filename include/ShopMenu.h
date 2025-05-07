@@ -25,8 +25,8 @@ public:
 
     explicit ShopMenu(ItemService &item_service, const MainMenu::AppState &app_state);
     [[nodiscard]] std::string titleToken(const std::string &token= "") const;
-    void display() const override;
-    void run() const override;
+    void display() const;
+    void run() const;
     void showPage() const;
     void nextPage();
     void prevPage();

@@ -47,11 +47,10 @@ void ShopMenu::run() const {
         display();
         std::getline(std::cin, input);
         if (input.length() > 1 || input.empty()) {
-            std::cout << "Invalid choice, enter to try again" ;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            FormMenu::noticeTheEnter("Invalid choice, enter to try again");
             continue;
         }
-        int choice = input.at(0) - '0';
+        const int choice = input.at(0) - '0';
         if (choice == 0) {
             break;
         }
@@ -60,8 +59,7 @@ void ShopMenu::run() const {
             items[choice-1].action();
         }
         else {
-            std::cout << "Invalid choice, enter to try again: " ;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            FormMenu::noticeTheEnter("Invalid choice, enter to try again");
         }
     }
 }
@@ -266,6 +264,9 @@ void ShopMenu::showCartMenu() {
 }
 
 void ShopMenu::updateCart() const {
+    if (!this->cart.is_cart_modified()) {
+        return;
+    }
     if (!item_service.updateCart(this->cart)) {
         throw std::runtime_error("Failed to update cart");
     }

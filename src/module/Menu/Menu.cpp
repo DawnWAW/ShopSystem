@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "Menu.h"
-
 #include <iostream>
 #include <limits>
 #include <cstdlib>
@@ -55,7 +54,8 @@ void Menu::run() const {
 
         std::getline(std::cin, input);
         if (input.length() > 1 || input.empty()) {
-            std::cout << "Invalid choice, enter to try again" ;
+            std::cout << "Invalid choice, enter to try again" << std::endl;
+            std::cout << "Enter to continue...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
@@ -69,13 +69,10 @@ void Menu::run() const {
         if (choice > 0 && static_cast<size_t>(choice) <= items.size()) {
             clearScreen();
             items[choice-1].action();
-
-            // wait users to react
-            std::cout << "Enter to continue...";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
-            std::cout << "Invalid choice, enter to try again: " ;
+            std::cout << "Invalid choice, enter to try again" << std::endl;
+            std::cout << "Enter to continue...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
@@ -102,13 +99,10 @@ void Menu::run(const std::function<void()> &func) const {
         if (choice > 0 && static_cast<size_t>(choice) <= items.size()) {
             clearScreen();
             items[choice-1].action();
-
-            // wait users to react
-            std::cout << "Enter to continue...";
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
         else {
-            std::cout << "Invalid choice, enter to try again: " ;
+            std::cout << "Invalid choice, enter to try again" << std::endl;
+            std::cout << "Enter to continue...";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
