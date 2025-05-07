@@ -24,6 +24,11 @@ bool Cart::isCartEmpty() const {
 }
 
 void Cart::showCart() const {
+    if (this->isCartEmpty()) {
+        FormMenu::noticeTheEnter("My cart is Empty");
+        return;
+    }
+
     int total_number = 0;
     double total_price = 0;
     for (int i=0;i<cart_list.itemId_vector.size();++i) {
@@ -93,7 +98,7 @@ void Cart::showCartMenu() const {
     Menu cart_menu("My cart");
     cart_menu.addItem("Cart item: ",
         [this]() {
-            if (int cart_id = FormMenu::getIntInput("Enter cart id: "); this->cart_list.items_map.contains(cart_id)) {
+            if (const int cart_id = FormMenu::getIntInput("Enter cart id: "); this->cart_list.items_map.contains(cart_id)) {
                 std::cout << "Item is already in your cart, do you want to ";
             }
         });

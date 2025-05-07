@@ -187,8 +187,7 @@ void ShopMenu::cartItem() {
 
 void ShopMenu::updateCartItem() {
     if (this->cart.isCartEmpty()) {
-        std::cout << "My cart is Empty";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        FormMenu::noticeTheEnter("My cart is Empty");
         return;
     }
     const int index = this->cart.inputItemIndex();
@@ -200,7 +199,7 @@ void ShopMenu::updateCartItem() {
             [this,index]() {
                 this->cart.removeCartItem(index);
             });
-        ackMenu.addItem("Cancelled",
+        ackMenu.addItem("Cancel",
             [this]() {
                 std::cout << "Nothing changed" << std::endl;
             });
@@ -214,8 +213,7 @@ void ShopMenu::updateCartItem() {
 
 void ShopMenu::deleteCartItem() {
     if (this->cart.isCartEmpty()) {
-        std::cout << "My cart is Empty";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        FormMenu::noticeTheEnter("My cart is Empty");
         return;
     }
     FormMenu delete_menu("Which way do you want to delete items");
@@ -254,15 +252,6 @@ void ShopMenu::deleteCartItem() {
 
 void ShopMenu::showCartMenu() {
     Menu cart_menu("My cart");
-    cart_menu.addItem("Show my cart",
-        [this]() {
-            if (this->cart.isCartEmpty()) {
-                std::cout << "My cart is Empty";
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            }
-            else
-                this->cart.showCart();
-        });
     cart_menu.addItem("Update my cart",
         [this]() {
             this->updateCartItem();
@@ -271,7 +260,9 @@ void ShopMenu::showCartMenu() {
         [this]() {
             this->deleteCartItem();
     });
-    cart_menu.run();
+    cart_menu.run([this]() {
+        this->cart.showCart();
+    });
 }
 
 void ShopMenu::updateCart() const {

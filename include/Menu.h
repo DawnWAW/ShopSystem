@@ -20,7 +20,9 @@ public:
     void addItem(const std::string &description, std::function<void()> action);
     void clearItem();
     virtual void display() const;
+    virtual void display(const std::function<void()>& func) const;
     virtual void run() const;
+    virtual void run(const std::function<void()>& func) const;
     void setTitle(const std::string &title);
     static void clearScreen() ;
 

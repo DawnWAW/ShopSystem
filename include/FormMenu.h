@@ -17,6 +17,7 @@ public:
     static std::string getStrInput(const std::string &prompt);
     static double getDoubleInput(const std::string &prompt);
     static int getIntInput(const std::string &prompt);
+    static void noticeTheEnter(const std::string &prompt);
 };
 
 

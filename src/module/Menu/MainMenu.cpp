@@ -55,14 +55,33 @@ void MainMenu::showItemService(const AppState &app_state) const {
             shop_menu.searchByPrice();
         });
     if (app_state.isLoggedIn) {
-        shop_menu.addItem("Cart item",
+        shop_menu.addItem("Add to cart",
             [&shop_menu]() {
                 shop_menu.cartItem();
             });
+        shop_menu.addItem("Buy now",
+            [&shop_menu]() {
+               //TODO:BUY INTERFACE
+                FormMenu::noticeTheEnter("Under development");
+            });
         shop_menu.addItem("My Cart",
-    [&shop_menu]() {
-        shop_menu.showCartMenu();
-    });
+             [&shop_menu]() {
+                shop_menu.showCartMenu();
+            });
+    }
+    else {
+        shop_menu.addItem("Add to cart(Login needed)",
+            []() {
+                FormMenu::noticeTheEnter("You need to login at first to add items to cart");
+            });
+        shop_menu.addItem("Buy now(Login needed)",
+            []() {
+                FormMenu::noticeTheEnter("You need to login at first to buy items");
+            });
+        shop_menu.addItem("My Cart(Login needed)",
+             []() {
+                 FormMenu::noticeTheEnter("You need to login at first to view the cart");
+            });
     }
     shop_menu.run();
 

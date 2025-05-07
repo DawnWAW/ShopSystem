@@ -60,3 +60,9 @@ int FormMenu::getIntInput(const std::string &prompt) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return input;
 }
+
+void FormMenu::noticeTheEnter(const std::string &prompt) {
+    std::cout << prompt << std::endl;
+    std::cout << "Enter to continue...";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
