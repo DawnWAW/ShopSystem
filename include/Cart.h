@@ -15,7 +15,7 @@
 
 class Cart {
 public:
-    struct CartItem {
+    struct SomeItems {
         int itemId;
         std::string itemName;
         double itemPrice;
@@ -23,7 +23,7 @@ public:
     };
     struct CartList {
         std::vector<int> itemId_vector;
-        std::unordered_map<int, CartItem> items_map;
+        std::unordered_map<int, SomeItems> items_map;
     };
 
     explicit Cart(Account account);
@@ -35,7 +35,7 @@ public:
     bool checkItem(const int item_id) const;
     bool isInList(const int index) const;
     void addCartItem(const Item &item, int quantity);
-    void addCartItem(const CartItem &cart_item);
+    void addCartItem(const SomeItems &cart_item);
     void removeCartItemById(int id);
     void removeCartItem(const int index);
     void removeAllCartItem();

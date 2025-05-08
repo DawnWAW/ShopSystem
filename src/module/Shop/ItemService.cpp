@@ -192,10 +192,10 @@ bool ItemService::updateCart(const Cart &cart) const {
         throw std::runtime_error("Failed to delete cart");
     }
 
-    std::vector<Cart::CartItem> cart_items;
+    std::vector<Cart::SomeItems> cart_items;
     auto [itemId_vector, items_map] = cart.get_cart_list();
     for (const int id : itemId_vector) {
-        Cart::CartItem item;
+        Cart::SomeItems item;
         item.itemId = items_map[id].itemId;
         item.quantity = items_map[id].quantity;
         cart_items.push_back(item);

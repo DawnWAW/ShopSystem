@@ -11,6 +11,7 @@
 #include "Item.h"
 #include "Cart.h"
 #include <memory>
+#include <Order.h>
 
 
 class Database {
@@ -24,7 +25,7 @@ public:
 
     Database& openDB(const std::string &dbname);
 
-    Database& init_table() ;
+    Database& init_table();
 
     Database& execute(const std::string &sql);
 
@@ -55,13 +56,20 @@ public:
     [[nodiscard]] std::vector<int> getItemByPrice(const double &min_price, const double &max_price) const;
 
     // database for cart
-    [[nodiscard]] std::vector<Cart::CartItem> getCartItems(int account_id) const;
+    [[nodiscard]] std::vector<Cart::SomeItems> getCartItems(int account_id) const;
 
     [[nodiscard]] bool deleteCartItems(int account_id) const;
 
-    [[nodiscard]] bool setCartItems(const std::vector<Cart::CartItem> &cart_items, int account_id) const;
+    [[nodiscard]] bool setCartItems(const std::vector<Cart::SomeItems> &cart_items, int account_id) const;
 
+    // database for order
+    bool addOrder(const Order &order) const;
 
+    bool updateOrder(const Order &new_order) const;
+
+    bool deleteOrder(int id) const;
+
+    [[nodiscard]] std::unique_ptr<Order> getOrderById(const int &id) const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 

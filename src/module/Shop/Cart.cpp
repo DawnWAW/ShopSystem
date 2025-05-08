@@ -36,7 +36,7 @@ void Cart::showCart() const {
     int total_number = 0;
     double total_price = 0;
     for (int i=0;i<cart_list.itemId_vector.size();++i) {
-        CartItem item = cart_list.items_map.at(cart_list.itemId_vector.at(i));
+        SomeItems item = cart_list.items_map.at(cart_list.itemId_vector.at(i));
         std::cout << "[" << i+1 << "]"
         << item.itemName
         << " [Price] " << item.itemPrice <<"$ "
@@ -60,7 +60,7 @@ bool Cart::isInList(const int index) const {
 
 
 void Cart::addCartItem(const Item &item, const int quantity) {
-    CartItem new_item;
+    SomeItems new_item;
     new_item.itemId = item.get_id();
     new_item.itemName = item.get_name();
     new_item.itemPrice = item.get_price();
@@ -71,7 +71,7 @@ void Cart::addCartItem(const Item &item, const int quantity) {
     this->isCartModified = true;
 }
 
-void Cart::addCartItem(const CartItem &cart_item) {
+void Cart::addCartItem(const SomeItems &cart_item) {
     this->cart_list.itemId_vector.push_back(cart_item.itemId);
     this->cart_list.items_map[cart_item.itemId] = cart_item;
 }
