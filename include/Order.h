@@ -16,7 +16,8 @@ public:
         PREPARING = 1, // 准备发货
         TRANSPORTING = 2, // 运输中
         DELIVERED = 3, // 已送达
-        INVISIBLE = 4  // 不可见
+        INVISIBLE = 4,  // 不可见
+        CANCELLED = 5,  // 已取消
 };
 
 private:

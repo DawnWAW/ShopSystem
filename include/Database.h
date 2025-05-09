@@ -63,13 +63,13 @@ public:
     [[nodiscard]] bool setCartItems(const std::vector<Cart::SomeItems> &cart_items, int account_id) const;
 
     // database for order
-    bool addOrder(const Order &order) const;
+    [[nodiscard]] bool addOrder(const Order &order) const;
 
-    bool updateOrder(const Order &new_order) const;
-
-    bool deleteOrder(int id) const;
+    [[nodiscard]] bool updateOrder(const Order &new_order) const;
 
     [[nodiscard]] std::unique_ptr<Order> getOrderById(const int &id) const;
+
+    [[nodiscard]] std::vector<int> getOrdersByAccount(const Account &account) const;
 
     [[nodiscard]] sqlite3 *getDB() const;
 

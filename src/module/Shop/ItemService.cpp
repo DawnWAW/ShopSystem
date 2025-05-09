@@ -203,6 +203,50 @@ bool ItemService::updateCart(const Cart &cart) const {
     return  database.setCartItems(cart_items,account_id);
 }
 
+int ItemService::getItemStock(const int item_id) const {
+    const std::unique_ptr<Item> item = database.getItemById(item_id);
+    return item->get_stock();
+}
+
+bool ItemService::updateItemStock(const int item_id, const int stock) const {
+    const std::unique_ptr<Item> item = database.getItemById(item_id);
+    item->set_stock(stock);
+    return database.updateItem(*item);
+}
+
+std::vector<Order> ItemService::queryOrderByAccount(const Account &account) const {
+    std::vector<Order> orders;
+    std::vector<int> order_ids = database.getOrdersByAccount(account);
+    for (auto id : order_ids) {
+        orders.push_back(*database.getOrderById(id));
+    }
+    return orders;
+}
+
+std::vector<Order> ItemService::queryAllOrders() const {
+    std::vector<Order> orders;
+    std::vector<int> order_ids = database.queryAllId("user_orders");
+    for (auto id : order_ids) {
+        orders.push_back(*database.getOrderById(id));
+    }
+    return orders;
+}
+
+void ItemService::autoStatuSwitch(int order_id, std::chrono::seconds delay) const {
+    std::jthread([delay, order_id, this]() {
+        std::this_thread::sleep_for(delay);
+        std::unique_ptr<Order> order = database.getOrderById(order_id);
+        if (order->get_order_state() == Order::OrderState::PREPARING) {
+            std::cout << "order statu: "<< Order::order_state_toString(order->get_order_state()) <<std::endl;
+            order->set_order_state(2);
+            std::cout << "order statu: "<< Order::order_state_toString(order->get_order_state()) <<std::endl;
+            if (!database.updateOrder(*order)) {
+                throw std::runtime_error("Failed to update order");
+            }
+        }
+    }).detach();
+}
+
 void ItemService::showAllItems(const bool isDetailed) const {
     for (const auto& item : queryAllItems()) {
         item.display(isDetailed);

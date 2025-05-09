@@ -83,10 +83,6 @@ public:
 
     [[nodiscard]] std::string get_created_time() const;
 
-    bool increaseStock(int amount);
-
-    bool decreaseStock(int amount);
-
     [[nodiscard]] std::string get_updated_time() const;
 
     void display(bool isDetailed = false) const;

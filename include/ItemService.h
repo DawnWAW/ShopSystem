@@ -13,6 +13,8 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <thread>
+#include <chrono>
 
 
 class ItemService {
@@ -46,8 +48,17 @@ public:
 
   [[nodiscard]] bool updateCart(const Cart &cart) const;
 
+  // stock control
+  [[nodiscard]] int getItemStock(const int item_id) const;
 
+  [[nodiscard]] bool updateItemStock(const int item_id, const int stock) const;
 
+  // order interface
+  [[nodiscard]] std::vector<Order> queryOrderByAccount(const Account &account) const;
+
+  [[nodiscard]] std::vector<Order> queryAllOrders() const;
+
+  void autoStatuSwitch(int order_id, std::chrono::seconds delay) const;
 };
 
 

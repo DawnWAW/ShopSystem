@@ -60,6 +60,10 @@ void Order::set_order_state(const int order_state) {
             this->order_state = OrderState::TRANSPORTING; break;
         case 3:
             this->order_state = OrderState::DELIVERED; break;
+        case 4:
+            this->order_state = OrderState::INVISIBLE; break;
+        case 5:
+            this->order_state = OrderState::CANCELLED; break;
         default:
             break;
     }
@@ -73,6 +77,10 @@ std::string Order::order_state_toString(const OrderState order_state) {
             return "TRANSPORTING";
         case OrderState::DELIVERED:
             return "DELIVERED";
+        case OrderState::INVISIBLE:
+            return "INVISIBLE";
+        case OrderState::CANCELLED:
+            return "CANCELLED";
         default:
             return "UNKNOWN";
     }
@@ -119,7 +127,7 @@ void Order::showOrder() const {
     std::cout << "OrderID: " <<this->order_id << std::endl
             << "Datetime: " << this->order_datetime << std::endl
             << "Order State: " << order_state_toString(this->order_state) << std::endl
-            << "Buyer: " <<buyer_name << std::endl
+            << "Buyer: " << buyer_name << std::endl
             << "Items:\t" << "Total price:"<< order_total_price <<std::endl
             << "******************************" << std::endl;
     int index = 1;

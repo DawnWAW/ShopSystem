@@ -56,7 +56,7 @@ Database& Database::init_table() {
     //create user-orders table
     .execute(
         "create table if not exists user_orders("
-        "order_id    integer primary key autoincrement,"
+        "id    integer primary key autoincrement,"
         "total_price real              not null,"
         "order_state integer default 1 not null,"
         "account_id  integer           not null,"
@@ -507,16 +507,27 @@ bool Database::addOrder(const Order &order) const {
     return true;
 }
 
-// bool Database::updateOrder(const Order &new_order) const {
-//
-// }
-//
-// bool Database::deleteOrder(int id) const {
-// }
-//
+bool Database::updateOrder(const Order &new_order) const {
+    const auto sql = "UPDATE user_orders set order_state = ?, address = ? where id = ?";
+
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    sqlite3_bind_int(stmt, 1, static_cast<int>(new_order.get_order_state()));
+    sqlite3_bind_text(stmt, 2, new_order.get_address().c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 3, new_order.get_order_id());
+
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+
+    return success;
+}
+
 std::unique_ptr<Order> Database::getOrderById(const int &id) const {
     // search for order
-    const char* sql = "SELECT * FROM user_orders WHERE order_id = ?;";
+    const char* sql = "SELECT * FROM user_orders WHERE id = ?;";
     sqlite3_stmt* stmt;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
@@ -561,6 +572,25 @@ std::unique_ptr<Order> Database::getOrderById(const int &id) const {
     }
     sqlite3_finalize(stmt2);
     return order;
+}
+
+std::vector<int> Database::getOrdersByAccount(const Account &account) const {
+    std::vector<int> orders;
+    const auto sql = "SELECT id FROM user_orders where account_id = ?;";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(this->db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+    sqlite3_bind_int(stmt, 1, account.getId());
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        orders.push_back(id);
+    }
+
+    sqlite3_finalize(stmt);
+    return orders;
+
 }
 
 sqlite3 * Database::getDB() const {
