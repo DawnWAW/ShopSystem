@@ -7,6 +7,8 @@
 #include <ItemService.h>
 #include <ShopMenu.h>
 
+#include "OrderList.h"
+
 
 MainMenu::MainMenu(Database &database,Logio &logio, ItemService &item_service) : Menu("MainMenu"), database(database), logio(logio),item_service(item_service) {
     this->updateMainMenu();
@@ -62,7 +64,7 @@ void MainMenu::showItemService(const AppState &app_state) const {
         shop_menu.addItem("Buy now",
             [&shop_menu]() {
                //TODO:BUY INTERFACE
-                FormMenu::noticeTheEnter("Under development");
+                    shop_menu.buyMenu();
             });
         shop_menu.addItem("My Cart",
              [&shop_menu]() {
@@ -121,6 +123,38 @@ void MainMenu::setAppState(const bool isLoggedIn, const Account &account) {
     this->appState.isAdmin = account.getUsername() == "root";
 }
 
+// todo
+void MainMenu::showOrderManagement(Account &account) const {
+    OrderList orders(item_service,account);
+
+    Menu order_management_menu("Orders Management");
+    if (account.getUsername() == "root") {
+        order_management_menu.addItem("set order status",
+            [&orders]() {
+                orders.setOrderStatus();
+            });
+    }
+    else {
+        order_management_menu.addItem("cancel order",
+            [&orders]() {
+                orders.cancelOrder();
+            });
+        order_management_menu.addItem("update order address",
+            [&orders]() {
+                orders.setOrderAddress();
+            });
+        order_management_menu.addItem("delete order",
+            [&orders]() {
+                orders.deleteOrder();
+            });
+    }
+    order_management_menu.run([&orders, this, account]() {
+        orders.refreshList();
+        orders.showOrderList();
+    });
+
+}
+
 
 void MainMenu::updateMainMenu() {
     this->clearItem();
@@ -132,12 +166,20 @@ void MainMenu::updateMainMenu() {
                 [this]() {
                     this->showItemManagement();
                 });
+            this->addItem("Orders Management",
+                [this]() {
+                    this->showOrderManagement(appState.account);
+                });
         }
         // user options : shopping, change password
         else {
             this->addItem("Shopping",
                 [this](){
                     this->showItemService(appState);
+                });
+            this->addItem("Orders Management",
+                [this]() {
+                    this->showOrderManagement(appState.account);
                 });
             this->addItem("Change Password",
                 [this]() {

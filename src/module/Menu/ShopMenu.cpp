@@ -6,7 +6,7 @@
 
 
 ShopMenu::ShopMenu(ItemService &item_service, const MainMenu::AppState &app_state):
-item_service(item_service),view_state(app_state.isLoggedIn ? 1 : 0),cart(app_state.account) {
+account(app_state.account),item_service(item_service),view_state(app_state.isLoggedIn ? 1 : 0),cart(app_state.account) {
     shop_items = item_service.queryAllItems();
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
@@ -162,7 +162,6 @@ void ShopMenu::cartItem() {
         return;
     }
 
-    // todo: notice the quantity should not over its stock
     if (const int item_id = shop_items[item_index].get_id();this->cart.checkItem(item_id)) {
         FormMenu ackMenu("This item is already in cart");
         ackMenu.addItem("Add quantity",
@@ -258,6 +257,10 @@ void ShopMenu::showCartMenu() {
         [this]() {
             this->deleteCartItem();
     });
+    cart_menu.addItem("Buy items in Cart",
+        [this]() {
+            this->buyCart();
+        });
     cart_menu.run([this]() {
         this->cart.showCart();
     });
@@ -269,6 +272,155 @@ void ShopMenu::updateCart() const {
     }
     if (!item_service.updateCart(this->cart)) {
         throw std::runtime_error("Failed to update cart");
+    }
+}
+
+void ShopMenu::buyMenu() const {
+    FormMenu buy_menu("Which way do you want to buy");
+    buy_menu.addItem("Buy single item",
+        [this]() {
+            this->buySingleItem();
+        });
+    buy_menu.addItem("Buy multiple items",
+        [this]() {
+            this->buyMultiItem();
+        });
+    buy_menu.addItem("Cancel",
+        [](){});
+    buy_menu.run();
+}
+
+void ShopMenu::buySingleItem() const {
+    // select item
+    int item_index = -1;
+    const int from = page_view.current_page_number * page_view.number_per_page;
+    const int to = (from + page_view.number_per_page > page_view.item_number) ? page_view.item_number : from + page_view.number_per_page;
+    FormMenu item_select_menu("Which item do you want to put into cart");
+    item_select_menu.addItem(shop_items[from].get_name(),
+        [&item_index,from]() {
+            item_index = from;
+        });
+    if (to-1!=from) {
+        item_select_menu.addItem(shop_items[to-1].get_name(),
+           [&item_index, to]() {
+               item_index = to-1;
+           });
+    }
+    item_select_menu.addItem("Cancel",
+        []() {});
+    clearScreen();
+    this->showPage();
+    item_select_menu.run();
+
+    // generate order
+    if (item_index!=-1) {
+        const int stock = item_service.getItemStock(shop_items[item_index].get_id());
+        int quantity = Cart::inputItemNumber("Enter quantity",stock);
+        std::vector<Cart::SomeItems> items;
+        items.push_back(Cart::SomeItems(
+            shop_items[item_index].get_id(),
+            shop_items[item_index].get_name(),
+            shop_items[item_index].get_price(),
+            quantity));
+
+        if (!item_service.checkItemStock(items)) {
+            FormMenu::noticeTheEnter("Over stock");
+        }
+        else {
+            const std::string address = FormMenu::getStrInput("Enter address: ");
+
+            if (item_service.generateOrder(this->account,items,address)) {
+                FormMenu::noticeTheEnter("Order generated");
+            }
+            else {
+                FormMenu::noticeTheEnter("Fail to generate order");
+            }
+        }
+    }
+}
+
+void ShopMenu::buyMultiItem() const {
+    std::vector<Cart::SomeItems> items;
+
+    const std::string input = FormMenu::getStrInput("input indexes separated by space:");
+    std::istringstream iss(input);
+    int num;
+    std::set<int> id_set;
+    while (iss>>num) {
+        if (num > 0 && num <= shop_items.size()) {
+            id_set.insert(num-1);
+        }
+    }
+
+    for (const auto &id : id_set) {
+
+        Cart::SomeItems item;
+        item.itemId = shop_items[id].get_id();
+        item.itemName = shop_items[id].get_name();
+        item.itemPrice = shop_items[id].get_price();
+
+        std::cout<< item.itemName << " Price: " << item.itemPrice << std::endl;
+        const int stock = item_service.getItemStock(item.itemId);
+        item.quantity = Cart::inputItemNumber("Enter quantity",stock);
+
+        items.push_back(item);
+    }
+
+    if (!item_service.checkItemStock(items)) {
+        FormMenu::noticeTheEnter("Over stock");
+    }
+    else {
+        const std::string address = FormMenu::getStrInput("Enter address: ");
+
+        if (item_service.generateOrder(this->account,items,address)) {
+            FormMenu::noticeTheEnter("Order generated");
+        }
+        else {
+            FormMenu::noticeTheEnter("Fail to generate order");
+        }
+    }
+}
+
+void ShopMenu::buyCart(){
+    std::vector<Cart::SomeItems> items;
+    FormMenu select_menu("which way do you want to buy");
+    select_menu.addItem("Buy multiple items",
+            [&items,this]() {
+                const std::string input = FormMenu::getStrInput("input indexes separated by space:");
+                std::istringstream iss(input);
+                int num;
+                std::set<int> id_set;
+                while (iss>>num) {
+                if (this->cart.isInList(num-1))
+                    id_set.insert(this->cart.get_cart_list().itemId_vector[num-1]);
+                }
+
+                for (const int &id : id_set) {
+                    items.emplace_back(this->cart.get_cart_list().items_map.at(id));
+                }
+            });
+    select_menu.addItem("Buy all items in cart",
+        [&items, this]() {
+            items = this->cart.get_cart_items();
+        });
+    this->cart.showCart();
+    select_menu.run();
+
+    if (!item_service.checkItemStock(items)) {
+        FormMenu::noticeTheEnter("Over stock");
+        return;
+    }
+
+    const std::string address = FormMenu::getStrInput("Enter address: ");
+
+    if (item_service.generateOrder(this->account,items,address)) {
+        FormMenu::noticeTheEnter("Order generated");
+        for (const auto &item : items) {
+            this->cart.removeCartItemById(item.itemId);
+        }
+    }
+    else {
+        FormMenu::noticeTheEnter("Fail to generate order");
     }
 }
 

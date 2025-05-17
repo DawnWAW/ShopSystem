@@ -54,6 +54,14 @@ public:
   [[nodiscard]] bool updateItemStock(const int item_id, const int stock) const;
 
   // order interface
+  bool checkItemStock(const std::vector<Cart::SomeItems> &items) const;
+
+  bool generateOrder(const Account &account, std::vector<Cart::SomeItems> &items,const std::string &address) const;
+
+  bool setOrderStatus(Order &order, int status) const;
+
+  bool setOrderAddress(Order &order, const std::string &address) const;
+
   [[nodiscard]] std::vector<Order> queryOrderByAccount(const Account &account) const;
 
   [[nodiscard]] std::vector<Order> queryAllOrders() const;

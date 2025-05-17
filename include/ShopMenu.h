@@ -25,8 +25,8 @@ public:
 
     explicit ShopMenu(ItemService &item_service, const MainMenu::AppState &app_state);
     [[nodiscard]] std::string titleToken(const std::string &token= "") const;
-    void display() const;
-    void run() const;
+    void display() const override;
+    void run() const override;
     void showPage() const;
     void nextPage();
     void prevPage();
@@ -39,7 +39,13 @@ public:
     void deleteCartItem();
     void showCartMenu();
     void updateCart() const;
+    void buyMenu() const;
+    void buySingleItem() const;
+    void buyMultiItem() const;
+    void buyCart();
+
 private:
+    Account account;
     ItemService &item_service;
     std::vector<Item> shop_items;
     PageView page_view;

@@ -42,7 +42,7 @@ double Order::get_order_total_price() const {
 
 void Order::set_order_total_price() {
     double total_price = 0;
-    for (const auto item : order_items) {
+    for (const auto &item : order_items) {
         total_price += item.itemPrice * item.quantity;
     }
     order_total_price = total_price;
@@ -119,15 +119,11 @@ void Order::push_item(const Cart::SomeItems& item) {
 }
 
 void Order::showOrder() const {
-    // check if visible
-    if (this->order_state == OrderState::INVISIBLE) {
-        return;
-    }
-
     std::cout << "OrderID: " <<this->order_id << std::endl
             << "Datetime: " << this->order_datetime << std::endl
             << "Order State: " << order_state_toString(this->order_state) << std::endl
             << "Buyer: " << buyer_name << std::endl
+            << "Address: " << address << std::endl
             << "Items:\t" << "Total price:"<< order_total_price <<std::endl
             << "******************************" << std::endl;
     int index = 1;

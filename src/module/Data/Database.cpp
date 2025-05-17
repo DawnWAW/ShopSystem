@@ -429,8 +429,7 @@ bool Database::setCartItems(const std::vector<Cart::SomeItems> &cart_items, int 
     return true;
 }
 
-//TODO: implement these four interface
-bool Database::addOrder(const Order &order) const {
+bool Database::addOrder(Order &order) const {
     const auto sql1 = "INSERT INTO user_orders "
                       "(total_price, order_state, account_id, buyer_name, address, order_time) "
                       "VALUES (?, ?, ?, ?, ?, strftime('%s', 'now'));" ;
@@ -466,11 +465,10 @@ bool Database::addOrder(const Order &order) const {
 
     // 查询最后插入的ID
     sqlite3_stmt* id_stmt;
-    int64_t new_order_id = 0;
     const char* id_sql = "SELECT last_insert_rowid();";
     if (sqlite3_prepare_v2(db, id_sql, -1, &id_stmt, nullptr) == SQLITE_OK) {
         if (sqlite3_step(id_stmt) == SQLITE_ROW) {
-            new_order_id = sqlite3_column_int64(id_stmt, 0);
+            order.set_order_id(sqlite3_column_int(id_stmt, 0));
         }
         sqlite3_finalize(id_stmt);
     }
@@ -484,7 +482,7 @@ bool Database::addOrder(const Order &order) const {
     }
     // add items
     for (const auto &[itemId, itemName, itemPrice, quantity] : order.get_order_items()) {
-        sqlite3_bind_int64(stmt2, 1, new_order_id);
+        sqlite3_bind_int64(stmt2, 1, order.get_order_id());
         sqlite3_bind_int(stmt2, 2, itemId);
         sqlite3_bind_text(stmt2, 3, itemName.c_str(), -1, SQLITE_TRANSIENT);
         sqlite3_bind_int(stmt2, 4, quantity);
@@ -553,7 +551,7 @@ std::unique_ptr<Order> Database::getOrderById(const int &id) const {
     sqlite3_finalize(stmt);
 
     // search for order items
-    const char* sql2 = "SELECT * FROM order_items WHERE order_id = ?;";
+    const char* sql2 = "SELECT item_id,item_name,item_price,item_quantity FROM order_items WHERE order_id = ?;";
     sqlite3_stmt* stmt2;
 
     if (sqlite3_prepare_v2(db, sql2, -1, &stmt2, nullptr) != SQLITE_OK) {

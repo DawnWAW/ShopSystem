@@ -19,10 +19,10 @@ public:
     explicit Menu(const std::string& title = "");
     void addItem(const std::string &description, std::function<void()> action);
     void clearItem();
-    void display() const;
-    void display(const std::function<void()>& func) const;
-    void run() const;
-    void run(const std::function<void()>& func) const;
+    virtual void display() const;
+    virtual void display(const std::function<void()>& func) const;
+    virtual void run() const;
+    virtual void run(const std::function<void()>& func) const;
     void setTitle(const std::string &title);
     static void clearScreen() ;
 

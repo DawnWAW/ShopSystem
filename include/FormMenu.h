@@ -12,8 +12,8 @@
 class FormMenu final : public Menu {
 public:
     explicit FormMenu(const std::string &prompt);
-    void display() const;
-    void run() const;
+    void display() const override;
+    void run() const override;
     static std::string getStrInput(const std::string &prompt);
     static double getDoubleInput(const std::string &prompt);
     static int getIntInput(const std::string &prompt);

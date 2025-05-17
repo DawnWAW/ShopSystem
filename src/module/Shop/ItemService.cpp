@@ -134,7 +134,9 @@ std::vector<Item> ItemService::queryAllItems() const {
     std::vector<Item> items;
     std::vector<int> ids = database.queryAllId("items");
     for (auto id : ids) {
-        items.push_back(*database.getItemById(id));
+        if (getItemStock(id)!=0) {
+            items.push_back(*database.getItemById(id));
+        }
     }
     return items;
 }
@@ -214,6 +216,44 @@ bool ItemService::updateItemStock(const int item_id, const int stock) const {
     return database.updateItem(*item);
 }
 
+bool ItemService::checkItemStock(const std::vector<Cart::SomeItems> &items) const {
+    for (const auto &item : items) {
+        const int stock = getItemStock(item.itemId);
+        if (item.quantity > stock) {
+            std::cout<< item.itemName << " stock: " << stock << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ItemService::generateOrder(const Account &account, std::vector<Cart::SomeItems> &items,const std::string &address) const {
+    Order order(account);
+    order.set_address(address);
+    for (const auto &item : items) {
+        order.push_item(item);
+        if (!updateItemStock(item.itemId, getItemStock(item.itemId)-item.quantity)) {
+            return false;
+        }
+    }
+    order.set_order_total_price();
+    if (!database.addOrder(order)) {
+        throw std::runtime_error("Failed to add order");
+    }
+    autoStatuSwitch(order.get_order_id(),std::chrono::seconds(30));
+    return true;
+}
+
+bool ItemService::setOrderStatus(Order &order, const int status) const {
+    order.set_order_state(status);
+    return database.updateOrder(order);
+}
+
+bool ItemService::setOrderAddress(Order &order, const std::string &address) const {
+    order.set_address(address);
+    return database.updateOrder(order);
+}
+
 std::vector<Order> ItemService::queryOrderByAccount(const Account &account) const {
     std::vector<Order> orders;
     std::vector<int> order_ids = database.getOrdersByAccount(account);
@@ -237,9 +277,7 @@ void ItemService::autoStatuSwitch(int order_id, std::chrono::seconds delay) cons
         std::this_thread::sleep_for(delay);
         std::unique_ptr<Order> order = database.getOrderById(order_id);
         if (order->get_order_state() == Order::OrderState::PREPARING) {
-            std::cout << "order statu: "<< Order::order_state_toString(order->get_order_state()) <<std::endl;
             order->set_order_state(2);
-            std::cout << "order statu: "<< Order::order_state_toString(order->get_order_state()) <<std::endl;
             if (!database.updateOrder(*order)) {
                 throw std::runtime_error("Failed to update order");
             }

@@ -63,7 +63,7 @@ public:
     [[nodiscard]] bool setCartItems(const std::vector<Cart::SomeItems> &cart_items, int account_id) const;
 
     // database for order
-    [[nodiscard]] bool addOrder(const Order &order) const;
+    [[nodiscard]] bool addOrder(Order &order) const;
 
     [[nodiscard]] bool updateOrder(const Order &new_order) const;
 

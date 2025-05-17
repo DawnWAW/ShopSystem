@@ -15,6 +15,14 @@ Cart::Cart(Account account): account(std::move(account)) {
     return cart_list;
 }
 
+std::vector<Cart::SomeItems> Cart::get_cart_items() const {
+    std::vector<SomeItems> items;
+    for (const auto &item : cart_list.items_map) {
+        items.emplace_back(item.second);
+    }
+    return items;
+}
+
 int Cart::get_account_id() const {
     return this->account.getId();
 }
@@ -29,7 +37,7 @@ bool Cart::is_cart_modified() const {
 
 void Cart::showCart() const {
     if (this->isCartEmpty()) {
-        FormMenu::noticeTheEnter("My cart is Empty");
+        std::cout<< "My cart is Empty" << std::endl;
         return;
     }
 
@@ -120,6 +128,20 @@ int Cart::inputItemNumber(const std::string &prompt){
         item_number=FormMenu::getIntInput(prompt);
         if (item_number < 0) {
             std::cout << "Item number should more than 0" << std::endl;
+        }
+    }
+    return item_number;
+}
+
+int Cart::inputItemNumber(const std::string &prompt, const int limit) {
+    int item_number = -1;
+    while (item_number < 0 || item_number > limit) {
+        item_number=FormMenu::getIntInput(prompt + " limit[1-" + std::to_string(limit) + "]:");
+        if (item_number < 0) {
+            std::cout << "Item quantity should more than 0" << std::endl;
+        }
+        else if (item_number > limit) {
+            std::cout << "Item quantity should no more than stock left" << std::endl;
         }
     }
     return item_number;

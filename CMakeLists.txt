@@ -21,6 +21,7 @@ add_executable(ShopSystem main.cpp
         ${MODULE}/Menu/ShopMenu.cpp
         ${MODULE}/Data/Database.cpp
         ${MODULE}/Order/Order.cpp
+        ${MODULE}/Order/OrderList.cpp
 )
 
 add_executable(database_order_test test/database/database_order_test.cpp
@@ -35,6 +36,8 @@ add_executable(database_order_test test/database/database_order_test.cpp
         ${MODULE}/Menu/ShopMenu.cpp
         ${MODULE}/Data/Database.cpp
         ${MODULE}/Order/Order.cpp
+        src/module/Order/OrderList.cpp
+        include/OrderList.h
 )
 
 target_include_directories(ShopSystem PUBLIC ${INCLUDE})

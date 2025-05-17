@@ -28,6 +28,7 @@ public:
 
     explicit Cart(Account account);
     [[nodiscard]] CartList get_cart_list() const;
+    std::vector<SomeItems> get_cart_items() const;
     int get_account_id() const;
     bool isCartEmpty() const;
     [[nodiscard]] bool is_cart_modified() const;
@@ -42,6 +43,7 @@ public:
     void updateCartItem(const int index,const int quantity);
     int getCartItemQuantity(const int index) const;
     static int inputItemNumber(const std::string &prompt);
+    static int inputItemNumber(const std::string &prompt, int limit);
     int inputItemIndex() const;
 
 private:

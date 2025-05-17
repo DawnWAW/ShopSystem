@@ -27,6 +27,7 @@ public:
     void showItemService(const AppState &app_state) const;
     void showItemManagement() const;
     void setAppState(bool isLoggedIn, const Account &account);
+    void showOrderManagement(Account &account) const;
 
 private:
     Database& database;
