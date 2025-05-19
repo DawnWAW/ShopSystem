@@ -131,20 +131,24 @@ void MainMenu::showOrderManagement(Account &account) const {
     if (account.getUsername() == "root") {
         order_management_menu.addItem("set order status",
             [&orders]() {
+                orders.showOrderList();
                 orders.setOrderStatus();
             });
     }
     else {
         order_management_menu.addItem("cancel order",
             [&orders]() {
+                orders.showOrderList();
                 orders.cancelOrder();
             });
         order_management_menu.addItem("update order address",
             [&orders]() {
+                orders.showOrderList();
                 orders.setOrderAddress();
             });
         order_management_menu.addItem("delete order",
             [&orders]() {
+                orders.showOrderList();
                 orders.deleteOrder();
             });
     }

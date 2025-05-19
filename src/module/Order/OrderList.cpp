@@ -5,18 +5,14 @@
 #include "OrderList.h"
 
 OrderList::OrderList(ItemService &itemService, Account &account):itemService(itemService),account(account) {
-    if (account.getUsername() == "root") {
-        this->orders = itemService.queryAllOrders();
-    }
-    else
-        this->orders = itemService.queryOrderByAccount(account);
+    this->refreshList();
 }
 
 int OrderList::getOrderByIndex() const {
     int index = 0;
     do {
         if (index < 0 || index >= this->orders.size()) {
-            std::cout<< "invalid index" << std::endl;
+            FormMenu::noticeTheEnter("invalid index");
         }
         index = FormMenu::getIntInput("Input order index:")-1;
     }while ( index < 0 || index >= this->orders.size() );
@@ -24,23 +20,24 @@ int OrderList::getOrderByIndex() const {
 }
 
 void OrderList::refreshList() {
-    this->orders.clear();
+    if (!this->orders.empty()) {
+        this->orders.clear();
+    }
     if (account.getUsername() == "root") {
         this->orders = itemService.queryAllOrders();
     }
-    else
+    else {
         this->orders = itemService.queryOrderByAccount(account);
+        std::erase_if(this->orders,
+        [](const Order &order) {
+            return order.get_order_state() == Order::OrderState::INVISIBLE;
+        });
+    }
 }
 
 void OrderList::showOrderList() const {
     int index = 1;
-    for (const auto order : orders) {
-        if (this->account.getUsername()!="root") {
-            if (order.get_order_state() == Order::OrderState::INVISIBLE){
-                index++;
-                continue;
-            }
-        }
+    for (const auto &order : orders) {
         std::cout << "Order Index: " << index++ << std::endl;
         order.showOrder();
     }
@@ -50,7 +47,7 @@ void OrderList::cancelOrder() const {
     Order order = orders[this->getOrderByIndex()];
 
     if (order.get_order_state()!=Order::OrderState::PREPARING) {
-        FormMenu::noticeTheEnter("Order is not in preparing, can not be canceled");
+        FormMenu::noticeTheEnter("Order can not be canceled now");
         return;
     }
     order.showOrder();
@@ -72,7 +69,7 @@ void OrderList::deleteOrder() const {
     Order order = orders[this->getOrderByIndex()];
 
     if (!(order.get_order_state()==Order::OrderState::DELIVERED||order.get_order_state()==Order::OrderState::CANCELLED)) {
-        FormMenu::noticeTheEnter("Order is not delivered yet, can not be deleted");
+        FormMenu::noticeTheEnter("Order can not be deleted now");
         return;
     }
     order.showOrder();
@@ -100,7 +97,7 @@ void OrderList::setOrderStatus() const {
     select_status.addItem("Canceled",[&order,this]() {
         itemService.setOrderStatus(order,5);
     });
-    select_status.addItem("INVISIBLE",[&order,this]() {
+    select_status.addItem("Invisible",[&order,this]() {
         itemService.setOrderStatus(order,4);
     });
     order.showOrder();
@@ -111,7 +108,7 @@ void OrderList::setOrderAddress() const {
     Order order = orders[this->getOrderByIndex()];
 
     if (order.get_order_state()!=Order::OrderState::PREPARING) {
-        FormMenu::noticeTheEnter("Order is transporting, can not update address");
+        FormMenu::noticeTheEnter("Order can not update address now");
         return;
     }
 
