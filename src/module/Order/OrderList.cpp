@@ -36,6 +36,11 @@ void OrderList::refreshList() {
 }
 
 void OrderList::showOrderList() const {
+    if (orders.empty()) {
+        std::cout << "No orders found" << std::endl;
+        return;
+    }
+
     int index = 1;
     for (const auto &order : orders) {
         std::cout << "Order Index: " << index++ << std::endl;

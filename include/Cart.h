@@ -20,6 +20,9 @@ public:
         std::string itemName;
         double itemPrice;
         int quantity;
+        Item::Discount discount;
+
+        void set_discount_price();
     };
     struct CartList {
         std::vector<int> itemId_vector;

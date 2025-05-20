@@ -66,3 +66,20 @@ void FormMenu::noticeTheEnter(const std::string &prompt) {
     std::cout << "Enter to continue...";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
+
+int64_t FormMenu::getTimeInput(const std::string &prompt) {
+    const std::string& format = "%Y-%m-%d %H:%M:%S";
+    std::tm tm = {};
+    std::istringstream ss(FormMenu::getStrInput(prompt + "(format " + format +")"));
+    ss >> std::get_time(&tm, format.c_str());
+
+    if (ss.fail()) {
+        throw std::runtime_error("Failed to parse time string");
+    }
+
+    // 转换为time_t (秒级时间戳)
+    const auto time = std::mktime(&tm);
+
+    // 转换为int64_t
+    return static_cast<int64_t>(time);
+}

@@ -23,6 +23,12 @@ public:
         OTHER
     };
 
+    struct Discount {
+        int percent_off = 0;
+        double reach = 0;
+        double cut = 0;
+    };
+
 
     // read from database
     [[nodiscard]] Item(const int id, const std::string &name, const double price, const int stock,const int state, const std::string category, const std::string &description, const int64_t &created_time, const int64_t &updated_time);
@@ -45,6 +51,8 @@ private:
     int stock;
 
     int state;
+
+    Discount discount;
 
 private:
     std::string created_time;
@@ -71,7 +79,13 @@ public:
 
     [[nodiscard]] double get_price() const;
 
+    [[nodiscard]] double get_discount_price() const;
+
     void set_price(double price);
+
+    [[nodiscard]] Discount get_discount() const;
+
+    void set_discount(const Discount &discount);
 
     [[nodiscard]] int get_stock() const;
 

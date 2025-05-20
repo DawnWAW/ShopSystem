@@ -315,13 +315,17 @@ void ShopMenu::buySingleItem() const {
     // generate order
     if (item_index!=-1) {
         const int stock = item_service.getItemStock(shop_items[item_index].get_id());
-        int quantity = Cart::inputItemNumber("Enter quantity",stock);
+        const int quantity = Cart::inputItemNumber("Enter quantity",stock);
         std::vector<Cart::SomeItems> items;
-        items.push_back(Cart::SomeItems(
+        Cart::SomeItems new_item = {
             shop_items[item_index].get_id(),
             shop_items[item_index].get_name(),
             shop_items[item_index].get_price(),
-            quantity));
+            quantity,
+            shop_items[item_index].get_discount()
+        };
+        new_item.set_discount_price();
+        items.emplace_back(new_item);
 
         if (!item_service.checkItemStock(items)) {
             FormMenu::noticeTheEnter("Over stock");
@@ -358,6 +362,8 @@ void ShopMenu::buyMultiItem() const {
         item.itemId = shop_items[id].get_id();
         item.itemName = shop_items[id].get_name();
         item.itemPrice = shop_items[id].get_price();
+        item.discount = shop_items[id].get_discount();
+        item.set_discount_price();
 
         std::cout<< item.itemName << " Price: " << item.itemPrice << std::endl;
         const int stock = item_service.getItemStock(item.itemId);

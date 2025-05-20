@@ -67,6 +67,13 @@ public:
   [[nodiscard]] std::vector<Order> queryAllOrders() const;
 
   void autoStatuSwitch(int order_id, std::chrono::seconds delay) const;
+
+  // discount interface
+  void getAllDiscountInfos() const;
+
+  void setDiscount() const;
+
+  void deleteDiscount() const;
 };
 
 

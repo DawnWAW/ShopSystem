@@ -73,6 +73,15 @@ Database& Database::init_table() {
         "item_name     text    not null,"
         "item_quantity integer not null,"
         "item_price    real    not null);"
+    )
+    //discount table
+    .execute("create table if not exists item_discount("
+        "id         integer primary key,"
+        "discount   integer default 0,"
+        "reach      real    default 0,"
+        "cut        real    default 0,"
+        "start_time integer not null,"
+        "end_time   integer not null);"
     );
     return *this;
 }
@@ -283,6 +292,8 @@ std::unique_ptr<Item> Database::getItemById(const int &id) const {
         sqlite3_column_int64(stmt, 8)     // updated_time
     );
 
+    item->set_discount(getDiscount(id));
+
     sqlite3_finalize(stmt);
     return item;
 }
@@ -366,6 +377,8 @@ std::vector<Cart::SomeItems> Database::getCartItems(int account_id) const {
         item.itemName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)),
         item.quantity = sqlite3_column_int(stmt, 2);
         item.itemPrice = sqlite3_column_double(stmt, 3);
+        item.discount = getDiscount(item.itemId);
+        item.set_discount_price();
         cart_items.push_back(item);
     }
 
@@ -481,12 +494,12 @@ bool Database::addOrder(Order &order) const {
         return false;
     }
     // add items
-    for (const auto &[itemId, itemName, itemPrice, quantity] : order.get_order_items()) {
+    for (const auto &item : order.get_order_items()) {
         sqlite3_bind_int64(stmt2, 1, order.get_order_id());
-        sqlite3_bind_int(stmt2, 2, itemId);
-        sqlite3_bind_text(stmt2, 3, itemName.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt2, 4, quantity);
-        sqlite3_bind_double(stmt2, 5, itemPrice);
+        sqlite3_bind_int(stmt2, 2, item.itemId);
+        sqlite3_bind_text(stmt2, 3, item.itemName.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt2, 4, item.quantity);
+        sqlite3_bind_double(stmt2, 5, item.itemPrice);
 
         if (sqlite3_step(stmt2) != SQLITE_DONE) {
             sqlite3_finalize(stmt2);
@@ -589,6 +602,96 @@ std::vector<int> Database::getOrdersByAccount(const Account &account) const {
     sqlite3_finalize(stmt);
     return orders;
 
+}
+
+Item::Discount Database::getDiscount(const int id) const {
+    const auto sql = "select discount,reach,cut from item_discount "
+                     "where id == ? "
+                     "and CAST(strftime('%s','now') AS INTEGER) between start_time and end_time;";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(this->db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+    sqlite3_bind_int(stmt, 1, id);
+
+    Item::Discount discount;
+
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+        sqlite3_finalize(stmt);
+        return discount;
+    }
+
+    discount.percent_off = sqlite3_column_int(stmt, 0);
+    discount.reach = sqlite3_column_double(stmt, 1);
+    discount.cut = sqlite3_column_double(stmt, 2);
+
+    sqlite3_finalize(stmt);
+    return discount;
+
+}
+
+Item::Discount Database::getDiscount(const int id, std::string &start_time, std::string &end_time) const {
+    const auto sql = "select discount,reach,cut,datetime(start_time,'unixepoch'),datetime(end_time,'unixepoch') "
+                     "from item_discount where id == ? ";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(this->db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+    sqlite3_bind_int(stmt, 1, id);
+
+    Item::Discount discount;
+
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+        sqlite3_finalize(stmt);
+        return discount;
+    }
+
+    discount.percent_off = sqlite3_column_int(stmt, 0);
+    discount.reach = sqlite3_column_double(stmt, 1);
+    discount.cut = sqlite3_column_double(stmt, 2);
+    start_time = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+    end_time = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+
+    sqlite3_finalize(stmt);
+    return discount;
+
+}
+
+bool Database::setDiscount(const int id, const Item::Discount &discount, const int64_t start_time,
+    const int64_t end_time) const {
+    //TODO: insert or update a discount
+    const auto sql = "insert or replace into item_discount "
+                     "(id, discount, reach, cut, start_time, end_time) "
+                     "VALUES (?,?,?,?,?,?);";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(this->db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("SQL error: " + std::string(sqlite3_errmsg(this->db)));
+    }
+
+    sqlite3_bind_int(stmt, 1, id);
+    sqlite3_bind_int(stmt, 2, discount.percent_off);
+    sqlite3_bind_double(stmt, 3, discount.reach);
+    sqlite3_bind_double(stmt, 4, discount.cut);
+    sqlite3_bind_int64(stmt, 5, start_time);
+    sqlite3_bind_int64(stmt, 6, end_time);
+
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+
+    return success;
+}
+
+bool Database::deleteDiscount(const int id) const {
+    const char* sql = "DELETE FROM item_discount WHERE id = ?;";
+    sqlite3_stmt* stmt;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+    sqlite3_bind_int(stmt, 1, id);
+    const bool success = (sqlite3_step(stmt) == SQLITE_DONE);
+    sqlite3_finalize(stmt);
+    return success;
 }
 
 sqlite3 * Database::getDB() const {

@@ -77,8 +77,25 @@ void Item::set_description(const std::string &description) {
     return price;
 }
 
+double Item::get_discount_price() const {
+    double discount_price = get_price();
+
+    if (discount.percent_off != 0)
+        discount_price -= discount.percent_off / 100.0 * price;
+
+    return discount_price;
+}
+
 void Item::set_price(const double price) {
     this->price = price;
+}
+
+Item::Discount Item::get_discount() const {
+    return discount;
+}
+
+void Item::set_discount(const Discount &discount) {
+    this->discount = discount;
 }
 
 [[nodiscard]] int Item::get_stock() const {
@@ -120,9 +137,25 @@ std::string Item::to_string(const bool isDetailed) const {
         oss << "on sale)" << std::endl;
     }
     oss << name << std::endl
-        << "category: " << category << std::endl
-        << "price: " << std::fixed << std::setprecision(2) << price << std::endl
-        << "stock: " << stock << std::endl
+        << "category: " << category << std::endl;
+
+    if (discount.percent_off == 0 && discount.reach == 0) {
+        oss << "price: " << std::fixed << std::setprecision(2) << price << std::endl;
+    }
+    else{
+        oss << "discount: ";
+
+        if (discount.percent_off != 0) {
+            oss << discount.percent_off << " PERCENT OFF\t";
+        }
+        if (discount.reach != 0) {
+            oss << "Reach " <<discount.reach << "-" << discount.cut;
+        }
+        oss << std::endl;
+        oss << "price: " << std::fixed << std::setprecision(2) << price << "=>" << std::fixed << std::setprecision(2) << get_discount_price() << std::endl;
+    }
+
+    oss << "stock: " << stock << std::endl
         << "description: " << (description.empty()?"NULL":description) << std::endl;
 
     if (isDetailed) {

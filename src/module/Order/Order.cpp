@@ -43,7 +43,11 @@ double Order::get_order_total_price() const {
 void Order::set_order_total_price() {
     double total_price = 0;
     for (const auto &item : order_items) {
-        total_price += item.itemPrice * item.quantity;
+        if (item.discount.reach != 0 && item.itemPrice * item.quantity > item.discount.reach) {
+            total_price += item.quantity*item.itemPrice - item.discount.cut;
+        }
+        else
+            total_price += item.itemPrice * item.quantity;
     }
     order_total_price = total_price;
 }
@@ -125,11 +129,16 @@ void Order::showOrder() const {
             << "Buyer: " << buyer_name << std::endl
             << "Address: " << address << std::endl
             << "Items:\t" << "Total price:"<< order_total_price <<std::endl
-            << "******************************" << std::endl;
+            << "**********************************" << std::endl;
     int index = 1;
     for (const auto &item : this->order_items) {
         std::cout << "   \t name\t price\t *quantity" << std::endl;
-        std::cout << "[" << index++ << "] \t" <<item.itemName << "\t\t" <<item.itemPrice<<"\t * "<<item.quantity << std::endl;
+        std::cout << "[" << index++ << "] \t" <<item.itemName << "\t\t" <<item.itemPrice<<"\t * "<<item.quantity ;
+
+        if (item.discount.reach != 0 && item.itemPrice * item.quantity > item.discount.reach) {
+            std::cout << " [Discount] -" << item.discount.cut;
+        }
+        std::cout << std::endl;
     }
-    std::cout << "******************************" << std::endl;
+    std::cout << "**********************************" << std::endl;
 }

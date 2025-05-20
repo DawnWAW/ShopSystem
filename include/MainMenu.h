@@ -28,6 +28,7 @@ public:
     void showItemManagement() const;
     void setAppState(bool isLoggedIn, const Account &account);
     void showOrderManagement(Account &account) const;
+    void showDiscountManagement() const;
 
 private:
     Database& database;

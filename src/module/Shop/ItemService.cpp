@@ -161,6 +161,7 @@ std::vector<Item> ItemService::queryAllItems() const {
 
 std::vector<Item> ItemService::queryItemsByPrice(const double &min_price,const double &max_price) const {
     std::vector<Item> items;
+    // TODO: HOW TO DO WITH DISCOUNT
     std::vector<int> ids = database.getItemByPrice(min_price, max_price);
     for (auto id : ids) {
         items.push_back(*database.getItemById(id));
@@ -283,6 +284,94 @@ void ItemService::autoStatuSwitch(int order_id, std::chrono::seconds delay) cons
             }
         }
     }).detach();
+}
+
+void ItemService::getAllDiscountInfos() const {
+    std::vector<int> discount_ids = database.queryAllId("item_discount");
+
+    if (discount_ids.empty()) {
+        std::cout << "No discount info" << std::endl;
+        return;
+    }
+
+    int index = 1;
+    for (const auto& discount_id : discount_ids) {
+        std::ostringstream oss;
+        std::string start_time;
+        std::string end_time;
+        const std::unique_ptr<Item> item = database.getItemById(discount_id);
+        Item::Discount discount = database.getDiscount(discount_id,start_time,end_time);
+
+        oss << "[" << index++ << "]\t";
+        oss << item->get_name() << " ";
+        if (discount.percent_off!=0)
+            oss << discount.percent_off<<" percent off ";
+        if (discount.reach!=0)
+            oss <<" Reach "<< discount.reach <<"-"<< discount.cut;
+        oss<<"\n\t";
+        oss << "[Time Limit] "<< start_time << " - " << end_time << std::endl;
+
+        std::cout << oss.str();
+    }
+}
+
+void ItemService::setDiscount() const {
+    const std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
+    if ( item == nullptr ){
+        FormMenu::noticeTheEnter("Item not found");
+        return;
+    }
+
+    Item::Discount discount = item->get_discount();
+    item->display();
+
+    FormMenu set_discount_menu("Setting discount:");
+    set_discount_menu.addItem("set percent-off",
+        [&discount]() {
+            discount.percent_off = FormMenu::getIntInput("Set percent-off (1-100): ");
+        });
+    set_discount_menu.addItem("Set reach and cut",
+        [&discount]() {
+            discount.reach = FormMenu::getIntInput("Set reach:");
+            discount.cut = FormMenu::getIntInput("Set cut:");
+        });
+    set_discount_menu.addItem("Set both",
+        [&discount]() {
+            discount.percent_off = FormMenu::getIntInput("Set percent-off (1-100): ");
+            discount.reach = FormMenu::getIntInput("Set reach:");
+            discount.cut = FormMenu::getIntInput("Set cut:");
+        });
+    set_discount_menu.run();
+
+    int64_t start_time = FormMenu::getTimeInput("Start Time");
+    int64_t end_time = FormMenu::getTimeInput("End Time");
+
+    bool isYes = false;
+    FormMenu ack_menu("Are you sure to set this discount?");
+    ack_menu.addItem("Yes",
+        [&isYes]() {
+            isYes = true;
+        });
+    ack_menu.addItem("No",[](){});
+    ack_menu.run();
+
+    if (isYes) {
+        if (database.setDiscount(item->get_id(),discount,start_time,end_time)) {
+            FormMenu::noticeTheEnter("Discount setting succeeded");
+        }
+        else {
+            FormMenu::noticeTheEnter("Discount setting failed");
+        }
+    }
+}
+
+void ItemService::deleteDiscount() const {
+    if (database.deleteDiscount(FormMenu::getIntInput("Enter item id: "))) {
+        FormMenu::noticeTheEnter("Item deleted succeeded");
+    }
+    else {
+        FormMenu::noticeTheEnter("Item deleted failed");
+    }
 }
 
 void ItemService::showAllItems(const bool isDetailed) const {

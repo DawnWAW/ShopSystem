@@ -63,7 +63,6 @@ void MainMenu::showItemService(const AppState &app_state) const {
             });
         shop_menu.addItem("Buy now",
             [&shop_menu]() {
-               //TODO:BUY INTERFACE
                     shop_menu.buyMenu();
             });
         shop_menu.addItem("My Cart",
@@ -123,7 +122,6 @@ void MainMenu::setAppState(const bool isLoggedIn, const Account &account) {
     this->appState.isAdmin = account.getUsername() == "root";
 }
 
-// todo
 void MainMenu::showOrderManagement(Account &account) const {
     OrderList orders(item_service,account);
 
@@ -159,6 +157,22 @@ void MainMenu::showOrderManagement(Account &account) const {
 
 }
 
+void MainMenu::showDiscountManagement() const {
+    Menu discount_management_menu("Discounts Management");
+
+    discount_management_menu.addItem("set discount",
+        [this]() {
+            this->item_service.setDiscount();
+        });
+    discount_management_menu.addItem("delete discount",
+        [this]() {
+            this->item_service.deleteDiscount();
+        });
+    discount_management_menu.run([this]() {
+        this->item_service.getAllDiscountInfos();
+    });
+}
+
 
 void MainMenu::updateMainMenu() {
     this->clearItem();
@@ -173,6 +187,10 @@ void MainMenu::updateMainMenu() {
             this->addItem("Orders Management",
                 [this]() {
                     this->showOrderManagement(appState.account);
+                });
+            this->addItem("Discount Management",
+                [this]() {
+                    this->showDiscountManagement();
                 });
         }
         // user options : shopping, change password

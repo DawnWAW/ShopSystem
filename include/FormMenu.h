@@ -5,6 +5,9 @@
 #ifndef FORMMENU_H
 #define FORMMENU_H
 #include <Menu.h>
+#include <chrono>
+#include <sstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 
@@ -18,6 +21,7 @@ public:
     static double getDoubleInput(const std::string &prompt);
     static int getIntInput(const std::string &prompt);
     static void noticeTheEnter(const std::string &prompt);
+    static int64_t getTimeInput(const std::string &prompt);
 };
 
 

@@ -13,7 +13,6 @@
 #include <memory>
 #include <Order.h>
 
-
 class Database {
 private:
     sqlite3 *db;
@@ -71,9 +70,18 @@ public:
 
     [[nodiscard]] std::vector<int> getOrdersByAccount(const Account &account) const;
 
-    [[nodiscard]] sqlite3 *getDB() const;
+    // database for discount
+    [[nodiscard]] Item::Discount getDiscount(const int id) const;
 
+    [[nodiscard]] Item::Discount getDiscount(const int id, std::string &start_time,std::string &end_time) const;
+
+    [[nodiscard]] bool setDiscount(const int id, const Item::Discount &discount, const int64_t start_time, const int64_t end_time) const;
+
+    [[nodiscard]] bool deleteDiscount(const int id) const;
+
+    [[nodiscard]] sqlite3 *getDB() const;
 };
+
 
 
 

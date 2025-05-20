@@ -8,6 +8,12 @@
 #include <utility>
 
 
+void Cart::SomeItems::set_discount_price() {
+    if (this->discount.percent_off != 0 ) {
+        this->itemPrice -= this->discount.percent_off/100.0 * itemPrice;
+    }
+}
+
 Cart::Cart(Account account): account(std::move(account)) {
 }
 
@@ -48,11 +54,17 @@ void Cart::showCart() const {
         std::cout << "[" << i+1 << "]"
         << item.itemName
         << " [Price] " << item.itemPrice <<"$ "
-        << " [Quantity] " << item.quantity
-        << std::endl;
+        << " [Quantity] " << item.quantity;
 
+        if (item.discount.reach != 0 && item.itemPrice * item.quantity > item.discount.reach) {
+            std::cout << " [Discount] -" << item.discount.cut;
+            total_price += item.quantity*item.itemPrice - item.discount.cut;
+        }
+        else
+            total_price += item.quantity*item.itemPrice;
+
+        std::cout << std::endl;
         total_number += item.quantity;
-        total_price += item.quantity*item.itemPrice;
     }
     std::cout << "[Total number] " << total_number << std::endl;
     std::cout << "[Total price] " << total_price << std::endl;
@@ -71,8 +83,12 @@ void Cart::addCartItem(const Item &item, const int quantity) {
     SomeItems new_item;
     new_item.itemId = item.get_id();
     new_item.itemName = item.get_name();
+
+    // price is under discounts
     new_item.itemPrice = item.get_price();
     new_item.quantity = quantity;
+    new_item.discount = item.get_discount();
+    new_item.set_discount_price();
 
     this->cart_list.itemId_vector.push_back(new_item.itemId);
     this->cart_list.items_map[new_item.itemId] = new_item;
