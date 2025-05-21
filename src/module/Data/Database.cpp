@@ -631,7 +631,7 @@ Item::Discount Database::getDiscount(const int id) const {
 }
 
 Item::Discount Database::getDiscount(const int id, std::string &start_time, std::string &end_time) const {
-    const auto sql = "select discount,reach,cut,datetime(start_time,'unixepoch'),datetime(end_time,'unixepoch') "
+    const auto sql = "select discount,reach,cut,datetime(start_time,'unixepoch','localtime'),datetime(end_time,'unixepoch','localtime') "
                      "from item_discount where id == ? ";
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(this->db, sql, -1, &stmt, nullptr) != SQLITE_OK) {

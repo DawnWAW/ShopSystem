@@ -134,10 +134,6 @@ void Order::showOrder() const {
     for (const auto &item : this->order_items) {
         std::cout << "   \t name\t price\t *quantity" << std::endl;
         std::cout << "[" << index++ << "] \t" <<item.itemName << "\t\t" <<item.itemPrice<<"\t * "<<item.quantity ;
-
-        if (item.discount.reach != 0 && item.itemPrice * item.quantity > item.discount.reach) {
-            std::cout << " [Discount] -" << item.discount.cut;
-        }
         std::cout << std::endl;
     }
     std::cout << "**********************************" << std::endl;

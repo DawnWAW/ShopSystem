@@ -294,7 +294,6 @@ void ItemService::getAllDiscountInfos() const {
         return;
     }
 
-    int index = 1;
     for (const auto& discount_id : discount_ids) {
         std::ostringstream oss;
         std::string start_time;
@@ -302,7 +301,7 @@ void ItemService::getAllDiscountInfos() const {
         const std::unique_ptr<Item> item = database.getItemById(discount_id);
         Item::Discount discount = database.getDiscount(discount_id,start_time,end_time);
 
-        oss << "[" << index++ << "]\t";
+        oss << "[" << discount_id << "]\t";
         oss << item->get_name() << " ";
         if (discount.percent_off!=0)
             oss << discount.percent_off<<" percent off ";
@@ -322,7 +321,7 @@ void ItemService::setDiscount() const {
         return;
     }
 
-    Item::Discount discount = item->get_discount();
+    Item::Discount discount;
     item->display();
 
     FormMenu set_discount_menu("Setting discount:");

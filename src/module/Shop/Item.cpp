@@ -152,7 +152,11 @@ std::string Item::to_string(const bool isDetailed) const {
             oss << "Reach " <<discount.reach << "-" << discount.cut;
         }
         oss << std::endl;
-        oss << "price: " << std::fixed << std::setprecision(2) << price << "=>" << std::fixed << std::setprecision(2) << get_discount_price() << std::endl;
+        oss << "price: " << std::fixed << std::setprecision(2) << price;
+        if (discount.percent_off!=0)
+           { oss << "=>" << std::fixed << std::setprecision(2) << get_discount_price();}
+        oss << std::endl;
+
     }
 
     oss << "stock: " << stock << std::endl
