@@ -64,20 +64,27 @@ void ShopMenu::run() const {
     }
 }
 
+/// 页面展示
 void ShopMenu::showPage() const {
+    // 商品为空时提示
     if (shop_items.empty()) {
         std::cout << "No item" << std::endl;
         return;
     }
+
+    // 获取当前页需要展示的物品的索引
     const int from = page_view.current_page_number * page_view.number_per_page;
     const int to = (from + page_view.number_per_page > page_view.item_number) ? page_view.item_number : from + page_view.number_per_page;
+
     for (int i = from; i < to; ++i) {
         std::cout << "Item index: [" << i+1 << "]" << std::endl;
         shop_items[i].display();
     }
 }
 
+/// 下一页
 void ShopMenu::nextPage() {
+    // 如果已经是最后一页, 跳转回到第一页
     if (page_view.current_page_number == page_view.total_pages - 1) {
         page_view.current_page_number = 0;
     }
@@ -85,7 +92,9 @@ void ShopMenu::nextPage() {
         this->page_view.current_page_number++;
 }
 
+/// 上一页
 void ShopMenu::prevPage() {
+    // 如果已经是第一页, 跳转到最后一页
     if (page_view.current_page_number == 0) {
         page_view.current_page_number = page_view.total_pages-1;
     }
@@ -93,46 +102,66 @@ void ShopMenu::prevPage() {
         this->page_view.current_page_number--;
 }
 
+/// 查询所有物品
+/// @param isLoggedIn 登陆的状态
 void ShopMenu::showAllItems(const bool isLoggedIn) {
+    // 将所有的物品加载到vector中
     this->shop_items = this->item_service.queryAllItems();
+    // 更新物品数与页数
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.current_page_number = 0;
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
+    // 根据登陆状态来更改输出
     this->view_state = isLoggedIn?1:0;
     setTitle(titleToken());
 }
 
+/// 根据名字搜索物品
 void ShopMenu::searchByName(){
+    // 获取输入
     const std::string item_name = Item::input_name("Search item by name: ");
+    // 查询物品并将结果加载道vector中
     this->shop_items = this->item_service.queryItemsByName(item_name);
+    // 更新页数信息
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.current_page_number = 0;
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
+    // 更新显示
     this->view_state = 2;
     setTitle(titleToken(item_name));
 }
 
+/// 根据类别搜索物品
 void ShopMenu::searchByCategory() {
+    // 获取输入
     const auto category = Item::input_category("Search item by category: ");
+    // 查询物品并将结果加载道vector中
     this->shop_items = this->item_service.queryItemsByCategory(category);
+    // 更新页数信息
     page_view.item_number = static_cast<int>(shop_items.size());
     page_view.current_page_number = 0;
     page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
+    // 更新显示
     this->view_state = 3;
     setTitle(titleToken(category));
 }
 
+/// 根据价格搜索物品
 void ShopMenu::searchByPrice() {
+    // 获取输入
     const double min_price = Item::input_price("min price: ");
     const double max_price = Item::input_price("max price: ");
+    // 查询物品并将结果加载道vector中
+    this->shop_items = this->item_service.queryItemsByPrice(min_price, max_price);
+    // 更新页数
+    page_view.item_number = static_cast<int>(shop_items.size());
+    page_view.current_page_number = 0;
+    page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
+    // 更新显示
     std::ostringstream item_price;
     item_price << min_price;
     item_price << "-";
     item_price << max_price;
-    this->shop_items = this->item_service.queryItemsByPrice(min_price, max_price);
-    page_view.item_number = static_cast<int>(shop_items.size());
-    page_view.current_page_number = 0;
-    page_view.total_pages =  std::ceil(static_cast<double>(page_view.item_number)/page_view.number_per_page);
     this->view_state = 4;
     setTitle(titleToken(item_price.str()));
 }

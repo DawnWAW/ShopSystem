@@ -5,6 +5,7 @@
 #include "ItemService.h"
 ItemService::ItemService(Database &database) : database(database) {}
 
+/// 管理员添加物品
 void ItemService::addItem() const {
     std::cout << "Adding item: " << std::endl;
     // 1. item name
@@ -58,13 +59,16 @@ void ItemService::addItem() const {
     ackMenu.run();
 }
 
+/// 管理员删除物品
 void ItemService::deleteItem() const {
+    // 根据ID获取要删除的物品
     std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
     if ( item == nullptr ) {
         std::cout << "Item not found." << std::endl;
         return;
     }
 
+    // 展示物品并提供确认删除的选项
     item->display(true);
     FormMenu ackMenu("Are you sure to delete this item?");
     ackMenu.addItem("Yes",
@@ -83,13 +87,15 @@ void ItemService::deleteItem() const {
     ackMenu.run();
 }
 
+/// 管理员更改物品
 void ItemService::updateItem() const {
+    // 获取对应物品
     std::unique_ptr<Item> item = database.getItemById(FormMenu::getIntInput("Enter item id: "));
     if ( item == nullptr ){
         FormMenu::noticeTheEnter("Item not found");
         return;
     }
-
+    // 创建菜单提供对应的setter方法
     Menu updateMenu("Update item options: ");
     updateMenu.addItem("Update name",
         [&item]() {
@@ -115,8 +121,10 @@ void ItemService::updateItem() const {
                        [&item]() {
                            item->set_description(FormMenu::getStrInput("Enter new item description: "));
                        });
+    // 将完成修改的item提交到数据库中完成更改
     updateMenu.addItem("Submit",
                         [&item, this]() {
+                            // 调用数据库接口
                             if (database.updateItem(*item)) {
                                 std::cout << "Item update succeeded" << std::endl;
                             }
@@ -130,6 +138,7 @@ void ItemService::updateItem() const {
     });
 }
 
+/// 查询所有物品
 std::vector<Item> ItemService::queryAllItems() const {
     std::vector<Item> items;
     std::vector<int> ids = database.queryAllId("items");
@@ -141,6 +150,7 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
+/// 根据名字查询物品
 [[nodiscard]] std::vector<Item> ItemService::queryItemsByName(const std::string &name) const {
     std::vector<Item> items;
     std::vector<int> ids = database.getItemByName(name);
@@ -150,6 +160,7 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
+/// 根据类别查询物品
 [[nodiscard]] std::vector<Item> ItemService::queryItemsByCategory(const std::string &category) const {
     std::vector<Item> items;
     std::vector<int> ids = database.getItemByCategory(category);
@@ -159,6 +170,7 @@ std::vector<Item> ItemService::queryAllItems() const {
     return items;
 }
 
+/// 根据价格查询物品
 std::vector<Item> ItemService::queryItemsByPrice(const double &min_price,const double &max_price) const {
     std::vector<Item> items;
     // TODO: HOW TO DO WITH DISCOUNT
@@ -169,9 +181,14 @@ std::vector<Item> ItemService::queryItemsByPrice(const double &min_price,const d
     return items;
 }
 
+/// 加载某个用户的购物车
+/// @param account 购物车所属的用户
+/// @return 购物车
 Cart ItemService::initCart(const Account &account) const {
 
+    // 构造一个空购物车
     Cart cart(account);
+    // 从数据库中查询该用户的购物车信息
     const auto cart_items = database.getCartItems(account.getId());
     for (const auto &item : cart_items) {
         cart.addCartItem(item);
@@ -179,11 +196,18 @@ Cart ItemService::initCart(const Account &account) const {
     return cart;
 }
 
+/// 删除数据库中存储的购物车的数据, 用于更新购物车
+/// @param account_id 购物车对应用户的ID
+/// @return 删除是否成功
 bool ItemService::deleteCart(const int account_id) const {
     return  database.deleteCartItems(account_id);
 }
 
+/// 更新数据库中购物车的数据
+/// @param cart 需要更新到数据库的购物车
+/// @return 更新是否成功
 bool ItemService::updateCart(const Cart &cart) const {
+    // get user id
     const int account_id = cart.get_account_id();
     // check account
     if (account_id <= 0) {
@@ -195,6 +219,7 @@ bool ItemService::updateCart(const Cart &cart) const {
         throw std::runtime_error("Failed to delete cart");
     }
 
+    // load items in cart to the vector for inserting into database
     std::vector<Cart::SomeItems> cart_items;
     auto [itemId_vector, items_map] = cart.get_cart_list();
     for (const int id : itemId_vector) {
@@ -206,17 +231,28 @@ bool ItemService::updateCart(const Cart &cart) const {
     return  database.setCartItems(cart_items,account_id);
 }
 
+
+/// 获取物品的库存
+/// @param item_id 物品的ID
+/// @return 物品的库存
 int ItemService::getItemStock(const int item_id) const {
     const std::unique_ptr<Item> item = database.getItemById(item_id);
     return item->get_stock();
 }
 
+/// 更改物品库存
+/// @param item_id 物品的ID
+/// @param stock 更改的库存数
+/// @return 更改是否成功
 bool ItemService::updateItemStock(const int item_id, const int stock) const {
     const std::unique_ptr<Item> item = database.getItemById(item_id);
     item->set_stock(stock);
     return database.updateItem(*item);
 }
 
+/// 检查vector中购买的物品的数量是否超出库存
+/// @param items 订单中的物品
+/// @return 是否有物品购买的数量超出库存
 bool ItemService::checkItemStock(const std::vector<Cart::SomeItems> &items) const {
     for (const auto &item : items) {
         const int stock = getItemStock(item.itemId);
@@ -228,19 +264,29 @@ bool ItemService::checkItemStock(const std::vector<Cart::SomeItems> &items) cons
     return true;
 }
 
+/// 生成订单
+/// @param account 订单购买者
+/// @param items 订单购买的物品
+/// @param address 订单地址
+/// @return 订单是否成功生成
 bool ItemService::generateOrder(const Account &account, std::vector<Cart::SomeItems> &items,const std::string &address) const {
+    // 初始化订单和地址信息
     Order order(account);
     order.set_address(address);
+    // 更新购买物品的库存
     for (const auto &item : items) {
         order.push_item(item);
         if (!updateItemStock(item.itemId, getItemStock(item.itemId)-item.quantity)) {
             return false;
         }
     }
+    // 计算物品的总价格
     order.set_order_total_price();
+    // 数据库存储订单
     if (!database.addOrder(order)) {
         throw std::runtime_error("Failed to add order");
     }
+    // 自动转换订单状态
     autoStatuSwitch(order.get_order_id(),std::chrono::seconds(30));
     return true;
 }
@@ -273,11 +319,18 @@ std::vector<Order> ItemService::queryAllOrders() const {
     return orders;
 }
 
+/// 自动转换订单状态
+/// @param order_id 订单的ID
+/// @param delay 自动转换的延迟时间
 void ItemService::autoStatuSwitch(int order_id, std::chrono::seconds delay) const {
+    // 创建一个线程
     std::jthread([delay, order_id, this]() {
+        // 线程休眠设定好的时间
         std::this_thread::sleep_for(delay);
+        // 获取对应订单并查询订单状态是否为待发货
         std::unique_ptr<Order> order = database.getOrderById(order_id);
         if (order->get_order_state() == Order::OrderState::PREPARING) {
+            // 更改订单状态
             order->set_order_state(2);
             if (!database.updateOrder(*order)) {
                 throw std::runtime_error("Failed to update order");

@@ -7,6 +7,7 @@
 Logio::Logio(Database &database):database(database) {
 }
 
+/// login interface
 bool Logio::login() {
     Account account;
     std::cout << "=== User Login ===\n";
@@ -68,13 +69,16 @@ bool Logio::login() {
     }
 }
 
+/// logout interface
 void Logio::logout() {
+    // set account to "guest"
     this->currentAccount = Account("Guest");
 }
 
 void Logio::changePassword() const {
     std::string newPassword = FormMenu::getStrInput("Enter new password: ");
 
+    // ask database for changing password
     if(database.changePassword(this->currentAccount.getUsername(),newPassword)) {
         std::cout << "Password changed succeeded"<<std::endl
         << "Your new password: "<<newPassword<<std::endl;
@@ -84,10 +88,13 @@ void Logio::changePassword() const {
     }
 }
 
+/// getter
 [[nodiscard]] Account Logio::current_account() const {
     return currentAccount;
 }
 
+/// setter
+/// @param current_account account to update
 void Logio::set_current_account(const Account &current_account) {
     currentAccount = current_account;
 }

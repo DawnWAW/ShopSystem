@@ -40,8 +40,11 @@ double Order::get_order_total_price() const {
     return order_total_price;
 }
 
+/// 计算订单总价格
 void Order::set_order_total_price() {
+    // init total price
     double total_price = 0;
+    // calculate all items prices
     for (const auto &item : order_items) {
         if (item.discount.reach != 0 && item.itemPrice * item.quantity > item.discount.reach) {
             total_price += item.quantity*item.itemPrice - item.discount.cut;

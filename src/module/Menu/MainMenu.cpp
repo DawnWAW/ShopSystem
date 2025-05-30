@@ -9,11 +9,16 @@
 
 #include "OrderList.h"
 
-
+/// 主菜单构造函数
+/// @param database 数据库依赖
+/// @param logio 登陆服务类
+/// @param item_service 物品服务类
+/// @brief 给主菜单注入相关依赖
 MainMenu::MainMenu(Database &database,Logio &logio, ItemService &item_service) : Menu("MainMenu"), database(database), logio(logio),item_service(item_service) {
     this->updateMainMenu();
 }
 
+/// 输出当前登陆的用户状态
 void MainMenu::showAppState() const {
     if (this->appState.isAdmin) {
         std::cout <<"[Admin]";
@@ -30,6 +35,8 @@ void MainMenu::showAppState() const {
     std::cout << std::endl;
 }
 
+/// 展示子菜单:浏览/购物
+/// @param app_state 应用的登陆状态
 void MainMenu::showItemService(const AppState &app_state) const {
     ShopMenu shop_menu(item_service,app_state);
     shop_menu.addItem("Previous page",
@@ -92,6 +99,7 @@ void MainMenu::showItemService(const AppState &app_state) const {
     }
 }
 
+/// 展示子菜单: 管理员的物品管理菜单
 void MainMenu::showItemManagement() const {
     Menu item_management_menu("Items Management");
     item_management_menu.addItem("Show all items",
@@ -116,12 +124,17 @@ void MainMenu::showItemManagement() const {
     item_management_menu.run();
 }
 
+/// 设置当前主菜单的登陆状态
+/// @param isLoggedIn 登陆状态
+/// @param account 登陆的账号
 void MainMenu::setAppState(const bool isLoggedIn, const Account &account) {
     this->appState.isLoggedIn = isLoggedIn;
     this->appState.account = account;
     this->appState.isAdmin = account.getUsername() == "root";
 }
 
+/// 展示子菜单: 订单管理
+/// @param account
 void MainMenu::showOrderManagement(Account &account) const {
     OrderList orders(item_service,account);
 
@@ -157,6 +170,7 @@ void MainMenu::showOrderManagement(Account &account) const {
 
 }
 
+/// 展示折扣管理子菜单
 void MainMenu::showDiscountManagement() const {
     Menu discount_management_menu("Discounts Management");
 
@@ -173,12 +187,15 @@ void MainMenu::showDiscountManagement() const {
     });
 }
 
-
+/// 更新主菜单
+/// @details 根据主菜单的app_state来提供不同的菜单项
 void MainMenu::updateMainMenu() {
+    // 1. 清空菜单项, 以便重新添加
     this->clearItem();
-    // login options
+
+    // 2. loggedIn options
     if(this->appState.isLoggedIn) {
-        // admin options : items management
+        // admin options : items, orders, discounts management
         if (this->appState.isAdmin) {
             this->addItem("Items Management",
                 [this]() {
@@ -193,7 +210,7 @@ void MainMenu::updateMainMenu() {
                     this->showDiscountManagement();
                 });
         }
-        // user options : shopping, change password
+        // user options : shopping, orders management, change password
         else {
             this->addItem("Shopping",
                 [this](){
@@ -213,22 +230,24 @@ void MainMenu::updateMainMenu() {
         // logout
         this->addItem("Logout("+appState.account.getUsername()+")",
             [this]() {
+                // 调用登陆服务的登出接口, 设置当前应用状态, 更新主菜单为未登录状态
                 logio.logout();
                 this->setAppState(false,logio.current_account());
                 this->updateMainMenu();
             });
     }
-    // not login options
+    // not loggedIn options
     else {
         // browse items
         this->addItem("Browsing",
             [this](){
                 this->showItemService(appState);
         });
-        // login
+        // login interface
         this->addItem("Login",
             [this]() {
                 if (logio.login()) {
+                    // 调用登陆服务的登出接口, 设置当前应用状态, 更新主菜单为已登录状态
                     this->setAppState(true,logio.current_account());
                     this->updateMainMenu();
                     this->showAppState();
