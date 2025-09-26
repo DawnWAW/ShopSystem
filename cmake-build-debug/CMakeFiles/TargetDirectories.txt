@@ -1,3 +1,0 @@
-/home/dawn/Documents/OOP/ShopSystem/cmake-build-debug/CMakeFiles/ShopSystem.dir
-/home/dawn/Documents/OOP/ShopSystem/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/dawn/Documents/OOP/ShopSystem/cmake-build-debug/CMakeFiles/rebuild_cache.dir
