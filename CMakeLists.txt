@@ -1,3 +1,12 @@
+## 设置目标系统为Windows
+#set(CMAKE_SYSTEM_NAME Windows)
+## 指定交叉编译器
+#set(CMAKE_C_COMPILER /usr/bin/x86_64-w64-mingw32-gcc)
+#set(CMAKE_CXX_COMPILER /usr/bin/x86_64-w64-mingw32-g++)
+#
+#set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+#set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+
 cmake_minimum_required(VERSION 3.30)
 project(ShopSystem)
 
